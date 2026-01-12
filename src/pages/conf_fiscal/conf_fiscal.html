@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Conferência Fiscal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/global.css">
+    <link rel="stylesheet" href="conf_fiscal.css">
+</head>
+
+<body>
+    <aside id="sidebar-container"></aside>
+
+    <main>
+        <header class="page-header compact-header">
+            <h2>CONFERÊNCIA FISCAL</h2>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="fiscal-container">
+
+                <form class="fiscal-grid">
+                    <div class="input-wrapper span-2">
+                        <input type="text" id="input-codigoEmpresa" placeholder=" " autocomplete="off">
+                        <label>Código Empresa</label>
+                        <ul id="lista-sugestoes-cod" class="sugestoes-box"></ul>
+                    </div>
+
+                    <div class="input-wrapper span-10">
+                        <input type="text" id="input-nomeEmpresa" placeholder=" " autocomplete="off">
+                        <label>Nome Empresa</label>
+                        <ul id="lista-sugestoes-nome" class="sugestoes-box"></ul>
+                    </div>
+
+                    <div class="input-wrapper span-2">
+                        <input type="date" id="data-ini" placeholder=" ">
+                        <label>Data Inicial</label>
+                    </div>
+
+                    <div class="input-wrapper span-2">
+                        <input type="date" id="data-fim" placeholder=" ">
+                        <label>Data Final</label>
+                    </div>
+
+                    <div class="input-wrapper span-2">
+                        <input type="text" id="input-codigoPlano" placeholder=" " autocomplete="off">
+                        <label>Código Plano</label>
+                    </div>
+
+                    <div class="input-wrapper span-6">
+                        <select id="select-nomePlano" required>
+                            <option value="" disabled selected></option>
+                            <option value="padrao">Padrão</option>
+                            <option value="simplificado">Simplificado</option>
+                        </select>
+                        <label>Plano Conferência</label>
+                        <button type="button" id="btn-config-plano" class="btn-browse">
+                            <span class="material-icons-round">settings</span>
+                        </button>
+                    </div>
+
+                    <div class="input-wrapper span-3">
+                        <select id="select-formato" required>
+                            <option value="" disabled selected></option>
+                            <option value="txt">TXT (Texto)</option>
+                            <option value="csv">CSV (Excel)</option>
+                            <option value="xlsx">XLSX (Excel)</option>
+                        </select>
+                        <label>Formato Relatório</label>
+                    </div>
+
+                    <div class="input-wrapper span-9">
+                        <input type="text" id="input-caminho" placeholder=" ">
+                        <label>Pasta Destino</label>
+                        <button type="button" id="btn-procurar" class="btn-browse">
+                            <span class="material-icons-round">folder_open</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="log-area" class="results-area">
+                    <div class="empty-state">
+                        <span class="material-icons-round" style="font-size: 32px;">hourglass_empty</span>
+                        <p>Aguardando execução...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../../components/menu.js"></script>
+    <script src="../../assets/global.js"></script>
+    <script src="conf_fiscal.js"></script>
+</body>
+
+</html>

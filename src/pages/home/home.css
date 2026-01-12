@@ -1,0 +1,140 @@
+/* Layout do Topo */
+.top-bar {
+    height: 70px;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.content-wrapper {
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* Banner de Boas Vindas */
+.welcome-banner {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+}
+
+.welcome-banner h1 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.welcome-banner p {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.hero-icon {
+    font-size: 64px;
+    opacity: 0.2;
+}
+
+/* Grid de Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card-summary {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-summary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Ícones coloridos dos cards */
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-icon span {
+    font-size: 24px;
+    color: white;
+}
+
+.card-icon.blue {
+    background-color: #e7f1ff;
+}
+
+.card-icon.blue span {
+    color: #0d6efd;
+}
+
+.card-icon.green {
+    background-color: #d1e7dd;
+}
+
+.card-icon.green span {
+    color: #198754;
+}
+
+.card-icon.purple {
+    background-color: #e0cffc;
+}
+
+.card-icon.purple span {
+    color: #6f42c1;
+}
+
+.card-info h3 {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.card-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Botão seta */
+.btn-icon {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.btn-icon:hover {
+    background-color: #f8f9fa;
+    color: var(--accent-color);
+}

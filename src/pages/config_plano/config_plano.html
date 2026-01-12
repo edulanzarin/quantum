@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Configuração de Plano</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/global.css">
+    <link rel="stylesheet" href="config_plano.css">
+</head>
+
+<body>
+    <aside id="sidebar-container"></aside>
+
+    <main>
+        <header class="page-header compact-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button id="btn-voltar" class="btn-back">
+                    <span class="material-icons-round">arrow_back</span>
+                </button>
+                <h2>CONFIGURAÇÃO DE PLANO</h2>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="config-container">
+
+                <div class="info-card">
+                    <h3>Informações do Plano</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Código:</label>
+                            <span id="plano-codigo">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Nome:</label>
+                            <span id="plano-nome">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-form">
+                    <h3>Configurações</h3>
+
+                    <div class="form-grid">
+                        <div class="input-wrapper">
+                            <input type="text" id="input-nome-plano" placeholder=" " autocomplete="off">
+                            <label>Nome do Plano</label>
+                        </div>
+
+                        <div class="input-wrapper">
+                            <textarea id="input-descricao" placeholder=" " rows="4"></textarea>
+                            <label>Descrição</label>
+                        </div>
+
+                        <!-- Adicione mais campos conforme necessário -->
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" id="btn-cancelar" class="btn-secondary">
+                            <span class="material-icons-round">close</span>
+                            Cancelar
+                        </button>
+                        <button type="button" id="btn-salvar" class="btn-primary">
+                            <span class="material-icons-round">save</span>
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../../components/menu.js"></script>
+    <script src="../../assets/global.js"></script>
+    <script src="config_plano.js"></script>
+</body>
+
+</html>

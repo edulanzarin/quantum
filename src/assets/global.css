@@ -1,0 +1,211 @@
+:root {
+    --sidebar-bg: #ffffff;
+    --main-bg: #f4f6f8;
+    --accent-color: #0d6efd;
+    --text-primary: #1a1c20;
+    --text-secondary: #6c757d;
+    --border-color: #ced4da;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+#sidebar-container {
+    width: 270px;
+    height: 100%;
+    flex-shrink: 0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid #e0e0e0;
+    z-index: 10;
+}
+
+.sidebar-content {
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar-header {
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    background-color: #f1f7ff;
+    color: var(--accent-color);
+}
+
+.menu-item.active {
+    background-color: #e7f1ff;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.page-header {
+    padding: 0 32px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+}
+
+.page-header h2 {
+    font-size: 1.25rem;
+    color: #1a1c20;
+    font-weight: 600;
+}
+
+.content-wrapper {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #f4f6f8;
+}
+
+.input-wrapper {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    width: 100%;
+    height: 100%;
+    padding: 0 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+    z-index: 1;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.input-wrapper select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 30px;
+    cursor: pointer;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
+}
+
+.input-wrapper label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #fff;
+    padding: 0 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.input-wrapper input:focus~label,
+.input-wrapper input:not(:placeholder-shown)~label,
+.input-wrapper select:focus~label,
+.input-wrapper select:valid~label,
+.input-wrapper input[type="date"]:focus~label,
+.input-wrapper input[type="date"]:not(:placeholder-shown)~label {
+    top: 0;
+    font-size: 11px;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.input-wrapper input[type="date"] {
+    color: transparent;
+}
+
+.input-wrapper input[type="date"]:focus,
+.input-wrapper input[type="date"]:not(:placeholder-shown) {
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    height: 40px;
+    width: 100%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    filter: brightness(90%);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
