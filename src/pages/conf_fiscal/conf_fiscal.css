@@ -1,232 +1,191 @@
-/* Layout Específico do Formulário Fiscal */
-
-/* Grid Responsivo e Compacto */
 .compact-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 15px;
-    /* Espaço entre colunas */
-    row-gap: 15px;
-    /* Espaço entre linhas */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 15px;
+  row-gap: 15px;
 }
 
-/* Classes de Coluna (Spans) */
 .span-2 {
-    grid-column: span 2;
+  grid-column: span 2;
 }
 
 .span-3 {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .span-4 {
-    grid-column: span 4;
+  grid-column: span 4;
 }
 
 .span-6 {
-    grid-column: span 6;
+  grid-column: span 6;
 }
 
 .span-8 {
-    grid-column: span 8;
+  grid-column: span 8;
 }
 
 .span-10 {
-    grid-column: span 10;
+  grid-column: span 10;
 }
 
 .span-12 {
-    grid-column: span 12;
+  grid-column: span 12;
 }
 
-/* Em telas menores (Notebooks pequenos), ajusta colunas */
 @media (max-width: 1200px) {
-    .span-2 {
-        grid-column: span 3;
-    }
+  .span-2 {
+    grid-column: span 3;
+  }
 
-    .span-10 {
-        grid-column: span 9;
-    }
-}
-
-/* Área de Loading e Sucesso */
-.loading-container,
-.success-container {
-    padding: 50px;
-    text-align: center;
-    color: #555;
-}
-
-.spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #0d6efd;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 15px auto;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+  .span-10 {
+    grid-column: span 9;
+  }
 }
 
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 1;
-    transition: opacity 0.2s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
 .modal-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-    display: none !important;
-    /* Mantém o hidden utilitário */
+  opacity: 0;
+  pointer-events: none;
+  display: none !important;
 }
 
 .modal-container {
-    background: #fff;
-    width: 600px;
-    max-width: 90%;
-    max-height: 85vh;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    animation: slideUp 0.3s ease-out;
+  background: #fff;
+  width: 600px;
+  max-width: 90%;
+  max-height: 85vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
 
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-/* Header do Modal */
 .modal-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f8f9fa;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
 }
 
 .modal-header h3 {
-    font-size: 16px;
-    color: #333;
-    margin: 0;
+  font-size: 16px;
+  color: #333;
+  margin: 0;
 }
 
-/* Body do Modal */
 .modal-body {
-    padding: 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    /* Para a tabela rolar internamente */
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-search-box {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0 10px;
-    margin-bottom: 15px;
-    background: #fff;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0 10px;
+  margin-bottom: 15px;
+  background: #fff;
 }
 
 .modal-search-box input {
-    border: none;
-    box-shadow: none;
-    padding-left: 8px;
+  border: none;
+  box-shadow: none;
+  padding-left: 8px;
 }
 
 .modal-search-box .material-icons-round {
-    color: #999;
+  color: #999;
 }
 
-/* Tabela dentro do Modal */
 .tabela-container {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 4px;
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
 }
 
 .tabela-empresas {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .tabela-empresas th {
-    background-color: #f1f3f5;
-    position: sticky;
-    top: 0;
-    text-align: left;
-    padding: 10px;
-    font-size: 12px;
-    color: #555;
-    border-bottom: 1px solid #ddd;
+  background-color: #f1f3f5;
+  position: sticky;
+  top: 0;
+  text-align: left;
+  padding: 10px;
+  font-size: 12px;
+  color: #555;
+  border-bottom: 1px solid #ddd;
 }
 
 .tabela-empresas td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #f5f5f5;
-    font-size: 13px;
-    cursor: pointer;
+  padding: 8px 10px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .tabela-empresas tr:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .tabela-empresas tr.selected {
-    background-color: var(--primary-light);
-    color: var(--primary);
-    font-weight: 500;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
 }
 
-/* Footer do Modal */
 .modal-footer {
-    padding: 15px 20px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fff;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
 }
 
 .footer-info small {
-    color: #888;
+  color: #888;
 }
 
 .footer-actions {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }

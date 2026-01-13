@@ -1,356 +1,387 @@
-const inputEmpresa = document.getElementById('input-codigoEmpresa');
-const inputNome = document.getElementById('input-nomeEmpresa');
-const inputDataIni = document.getElementById('data-ini');
-const inputDataFim = document.getElementById('data-fim');
-const inputCodPlano = document.getElementById('input-codigoPlano');
-const selectNomePlano = document.getElementById('select-nomePlano');
+/**
+ * Conferência Fiscal - Módulo Principal
+ * Gerencia a interface de geração de relatórios fiscais
+ */
 
-const logArea = document.getElementById('log-area');
+/* Elementos do DOM */
+const Elements = {
+  // Inputs principais
+  inputEmpresa: document.getElementById("input-codigoEmpresa"),
+  inputNome: document.getElementById("input-nomeEmpresa"),
+  inputDataIni: document.getElementById("data-ini"),
+  inputDataFim: document.getElementById("data-fim"),
+  inputCodPlano: document.getElementById("input-codigoPlano"),
+  selectNomePlano: document.getElementById("select-nomePlano"),
+  inputCaminho: document.getElementById("input-caminho"),
 
-// Solicita empresas ao iniciar
-window.Sistema.Funcoes.solicitarEmpresas();
+  // Botões
+  btnBuscarEmpresa: document.getElementById("btn-buscar-empresa"),
+  btnProcurar: document.getElementById("btn-procurar"),
+  btnExecutar: document.getElementById("btn-executar"),
 
-window.api.aoReceberResposta((respostaTexto) => {
+  // Modal
+  modalEmpresa: document.getElementById("modal-selecao-empresa"),
+  modalInputFiltro: document.getElementById("modal-input-filtro"),
+  modalTbody: document.getElementById("modal-lista-tbody"),
+  modalContador: document.getElementById("modal-contador"),
+  btnConfirmarSelecao: document.getElementById("btn-confirmar-selecao"),
+  btnsFecharModal: document.querySelectorAll(".btn-close-modal"),
+};
+
+/* Estado da aplicação */
+const AppState = {
+  empresaSelecionadaTemp: null,
+};
+
+/**
+ * Inicializa o módulo carregando dados e configurando eventos
+ */
+function inicializar() {
+  carregarEmpresas();
+  carregarPlanos();
+  configurarEventos();
+}
+
+/**
+ * Solicita a lista de empresas do backend
+ */
+function carregarEmpresas() {
+  window.Sistema.Funcoes.solicitarEmpresas();
+
+  window.api.aoReceberResposta((respostaTexto) => {
     try {
-        const json = JSON.parse(respostaTexto);
+      const json = JSON.parse(respostaTexto);
 
-        if (json.sucesso) {
-            if (json.dados && Array.isArray(json.dados)) {
-                window.Sistema.Dados.empresas = json.dados;
-                console.log(`Empresas carregadas: ${json.dados.length}`);
-            }
-        } else {
-            window.Sistema.Toast.error("Erro no Sistema", json.erro || "Erro ao carregar empresas.");
-        }
+      if (json.sucesso && json.dados && Array.isArray(json.dados)) {
+        window.Sistema.Dados.empresas = json.dados;
+        console.log(`Empresas carregadas: ${json.dados.length}`);
+      } else {
+        window.Sistema.Toast.error(
+          "Erro no Sistema",
+          json.erro || "Erro ao carregar empresas."
+        );
+      }
     } catch (e) {
-        window.Sistema.Toast.error("Erro de Processamento", "Não foi possível ler a resposta do servidor.");
-        console.error("Erro JSON:", e);
+      window.Sistema.Toast.error(
+        "Erro de Processamento",
+        "Não foi possível ler a resposta do servidor."
+      );
+      console.error("Erro JSON:", e);
     }
-});
-
-function configurarAutocomplete(inputPrincipal, listaElemento, tipo) {
-    inputPrincipal.addEventListener('input', () => {
-        const texto = inputPrincipal.value.trim().toLowerCase();
-        listaElemento.innerHTML = '';
-
-        if (!texto) {
-            listaElemento.style.display = 'none';
-            return;
-        }
-
-        const todasEmpresas = window.Sistema.Dados.empresas || [];
-        let sugestoes = [];
-
-        if (tipo === 'cod') {
-            sugestoes = todasEmpresas.filter(emp =>
-                emp.cod.toString().startsWith(texto)
-            );
-        } else {
-            sugestoes = todasEmpresas.filter(emp =>
-                emp.nome.toLowerCase().includes(texto)
-            );
-        }
-
-        if (sugestoes.length > 0) {
-            listaElemento.style.display = 'block';
-
-            sugestoes.slice(0, 15).forEach(emp => {
-                const li = document.createElement('li');
-
-                if (tipo === 'cod') {
-                    li.innerHTML = `
-                        <span style="display: flex; justify-content: center; align-items: center;">
-                            <span class="badge-cod" style="font-weight: bold; font-size: 1.1em;">${emp.cod}</span>
-                        </span>`;
-                } else {
-                    li.innerHTML = `<span>${emp.nome}</span>`;
-                }
-
-                li.addEventListener('click', () => {
-                    preencherCampos(emp);
-                    esconderListas();
-                });
-
-                listaElemento.appendChild(li);
-            });
-        } else {
-            listaElemento.style.display = 'none';
-        }
-    });
+  });
 }
 
-function preencherCampos(empresa) {
-    inputEmpresa.value = empresa.cod;
-    inputNome.value = empresa.nome;
+/**
+ * Preenche os campos de empresa com os dados fornecidos
+ * @param {Object} empresa - Objeto contendo cod e nome da empresa
+ */
+function preencherCamposEmpresa(empresa) {
+  Elements.inputEmpresa.value = empresa.cod;
+  Elements.inputNome.value = empresa.nome;
 }
 
+/**
+ * Tenta preencher automaticamente os campos de empresa baseado no valor digitado
+ * @param {HTMLElement} campo - Campo que disparou o evento (código ou nome)
+ */
 function autoPreencherEmpresa(campo) {
-    const todasEmpresas = window.Sistema.Dados.empresas || [];
-    const valor = campo.value.trim();
+  const empresas = window.Sistema.Dados.empresas || [];
+  const valor = campo.value.trim();
 
-    if (!valor) return;
+  if (!valor) return;
 
-    let empresaEncontrada = null;
+  let empresaEncontrada = null;
 
-    if (campo === inputEmpresa) {
-        // Busca exata pelo código
-        empresaEncontrada = todasEmpresas.find(emp => emp.cod.toString() === valor);
-    } else if (campo === inputNome) {
-        // Busca exata ou parcial pelo nome
-        empresaEncontrada = todasEmpresas.find(emp => emp.nome.toLowerCase() === valor.toLowerCase());
-
-        if (!empresaEncontrada) {
-            empresaEncontrada = todasEmpresas.find(emp => emp.nome.toLowerCase().includes(valor.toLowerCase()));
-        }
-    }
-
-    if (empresaEncontrada) {
-        preencherCampos(empresaEncontrada);
-    }
-}
-
-// Eventos Empresa
-inputEmpresa.addEventListener('blur', () => setTimeout(() => autoPreencherEmpresa(inputEmpresa), 100));
-inputEmpresa.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        autoPreencherEmpresa(inputEmpresa);
-        inputNome.focus();
-    }
-});
-
-inputNome.addEventListener('blur', () => setTimeout(() => autoPreencherEmpresa(inputNome), 100));
-inputNome.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        autoPreencherEmpresa(inputNome);
-    }
-});
-
-// === PLANO DE CONFERÊNCIA ===
-
-function preencherSelectPlanos(planos) {
-    selectNomePlano.innerHTML = '<option value="" disabled selected></option>';
-
-    planos.forEach(plano => {
-        const option = document.createElement('option');
-        option.value = plano.cod;
-        option.textContent = plano.nome;
-        option.dataset.codigo = plano.cod;
-        selectNomePlano.appendChild(option);
-    });
-}
-
-// Simulação de carregamento de planos
-setTimeout(() => {
-    const planosTemporarios = [
-        { cod: "1", nome: "Padrão" },
-        { cod: "2", nome: "Simplificado" },
-        { cod: "3", nome: "Detalhado" },
-        { cod: "4", nome: "Resumido" },
-        { cod: "5", nome: "Personalizado A" }
-    ];
-    preencherSelectPlanos(planosTemporarios);
-}, 100);
-
-function sincronizarPlanoPorCodigo() {
-    const codigoDigitado = inputCodPlano.value.trim();
-    if (!codigoDigitado) return;
-
-    const options = selectNomePlano.querySelectorAll('option');
-    let encontrou = false;
-
-    for (let option of options) {
-        if (option.value === codigoDigitado || option.dataset.codigo === codigoDigitado) {
-            selectNomePlano.value = option.value;
-            encontrou = true;
-            break;
-        }
-    }
-
-    if (!encontrou) {
-        // ADICIONADO: Toast de aviso quando o código do plano não existe
-        window.Sistema.Toast.warning("Plano não encontrado", `O código de plano ${codigoDigitado} não existe.`);
-    }
-}
-
-selectNomePlano.addEventListener('change', () => {
-    const optionSelecionada = selectNomePlano.options[selectNomePlano.selectedIndex];
-    inputCodPlano.value = optionSelecionada.dataset.codigo || selectNomePlano.value;
-});
-
-inputCodPlano.addEventListener('blur', () => sincronizarPlanoPorCodigo());
-inputCodPlano.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        sincronizarPlanoPorCodigo();
-    }
-});
-
-// Botão de procurar pasta
-const btnProcurar = document.getElementById('btn-procurar');
-const inputCaminho = document.getElementById('input-caminho');
-
-btnProcurar.addEventListener('click', async () => {
-    const caminho = await window.Sistema.Funcoes.selecionarPasta();
-    if (caminho) {
-        inputCaminho.value = caminho;
-        inputCaminho.dispatchEvent(new Event('input'));
-    }
-});
-
-function mostrarCarregamento() {
-    logArea.innerHTML = `
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <p>Gerando relatório...</p>
-            <small style="color: #6c757d;">Isso pode levar alguns minutos</small>
-        </div>
-    `;
-}
-
-const btnExecutar = document.getElementById('btn-executar');
-const btnVoltar = document.getElementById('btn-voltar');
-const formBody = document.querySelector('.card-body');
-const loadingArea = document.getElementById('loading-area');
-const successArea = document.getElementById('success-area');
-
-// Simulação de Execução
-btnExecutar.addEventListener('click', () => {
-    // 1. Esconde o form
-    formBody.classList.add('hidden');
-
-    // 2. Mostra Spinner
-    loadingArea.classList.remove('hidden');
-
-    // 3. Simula processo (aqui entraria sua chamada Python/Backend)
-    setTimeout(() => {
-        // Quando terminar:
-        loadingArea.classList.add('hidden');
-        successArea.classList.remove('hidden');
-    }, 3000); // 3 segundos simulados
-});
-
-// Botão para resetar e fazer nova consulta
-btnVoltar.addEventListener('click', () => {
-    successArea.classList.add('hidden');
-    formBody.classList.remove('hidden');
-    // Opcional: limpar campos
-    // document.querySelector('form').reset(); 
-});
-
-/* ==========================================
-   LÓGICA DO MODAL DE SELEÇÃO DE EMPRESAS
-   ========================================== */
-
-const modalEmpresa = document.getElementById('modal-selecao-empresa');
-const btnBuscarEmpresa = document.getElementById('btn-buscar-empresa');
-const modalInputFiltro = document.getElementById('modal-input-filtro');
-const modalTbody = document.getElementById('modal-lista-tbody');
-const modalContador = document.getElementById('modal-contador');
-const btnConfirmarSelecao = document.getElementById('btn-confirmar-selecao');
-const btnsFecharModal = document.querySelectorAll('.btn-close-modal');
-
-let empresaSelecionadaTemp = null; // Guarda a seleção antes de confirmar
-
-// 1. Abrir Modal
-btnBuscarEmpresa.addEventListener('click', () => {
-    modalEmpresa.classList.remove('hidden');
-    empresaSelecionadaTemp = null;
-    atualizarEstadoBotaoConfirmar();
-
-    // Limpa filtro e foca
-    modalInputFiltro.value = '';
-    renderizarListaModal(); // Renderiza todas ou as filtradas
-    setTimeout(() => modalInputFiltro.focus(), 100);
-});
-
-// 2. Fechar Modal
-btnsFecharModal.forEach(btn => {
-    btn.addEventListener('click', () => {
-        modalEmpresa.classList.add('hidden');
-    });
-});
-
-// Fechar ao clicar fora (Overlay)
-modalEmpresa.addEventListener('click', (e) => {
-    if (e.target === modalEmpresa) {
-        modalEmpresa.classList.add('hidden');
-    }
-});
-
-// 3. Renderizar Lista na Tabela
-function renderizarListaModal(termo = '') {
-    modalTbody.innerHTML = '';
-    const todasEmpresas = window.Sistema.Dados.empresas || [];
-    const termoLower = termo.toLowerCase();
-
-    // Filtrar
-    const filtradas = todasEmpresas.filter(emp =>
-        emp.cod.toString().includes(termoLower) ||
-        emp.nome.toLowerCase().includes(termoLower)
+  if (campo === Elements.inputEmpresa) {
+    empresaEncontrada = empresas.find((emp) => emp.cod.toString() === valor);
+  } else if (campo === Elements.inputNome) {
+    empresaEncontrada = empresas.find(
+      (emp) => emp.nome.toLowerCase() === valor.toLowerCase()
     );
 
-    // Preencher Tabela
-    filtradas.forEach(emp => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><strong>${emp.cod}</strong></td>
-            <td>${emp.nome}</td>
-        `;
+    if (!empresaEncontrada) {
+      empresaEncontrada = empresas.find((emp) =>
+        emp.nome.toLowerCase().includes(valor.toLowerCase())
+      );
+    }
+  }
 
-        // Evento de clique (Seleção única)
-        tr.addEventListener('click', () => {
-            selecionarLinha(tr, emp);
-        });
+  if (empresaEncontrada) {
+    preencherCamposEmpresa(empresaEncontrada);
+  }
+}
 
-        // Evento de clique duplo (Seleciona e Confirma)
-        tr.addEventListener('dblclick', () => {
-            selecionarLinha(tr, emp);
-            confirmarSelecaoEmpresa();
-        });
+/**
+ * Carrega a lista de planos de contas disponíveis
+ * TODO: Substituir por chamada real da API
+ */
+function carregarPlanos() {
+  setTimeout(() => {
+    const planos = [
+      { cod: "1", nome: "Padrão" },
+      { cod: "2", nome: "Simplificado" },
+      { cod: "3", nome: "Detalhado" },
+      { cod: "4", nome: "Resumido" },
+      { cod: "5", nome: "Personalizado A" },
+    ];
 
-        modalTbody.appendChild(tr);
+    preencherSelectPlanos(planos);
+  }, 100);
+}
+
+/**
+ * Popula o select de planos com as opções fornecidas
+ * @param {Array} planos - Array de objetos {cod, nome}
+ */
+function preencherSelectPlanos(planos) {
+  Elements.selectNomePlano.innerHTML =
+    '<option value="" disabled selected></option>';
+
+  planos.forEach((plano) => {
+    const option = document.createElement("option");
+    option.value = plano.cod;
+    option.textContent = plano.nome;
+    option.dataset.codigo = plano.cod;
+    Elements.selectNomePlano.appendChild(option);
+  });
+}
+
+/**
+ * Sincroniza o select de planos com o código digitado manualmente
+ */
+function sincronizarPlanoPorCodigo() {
+  const codigoDigitado = Elements.inputCodPlano.value.trim();
+
+  if (!codigoDigitado) return;
+
+  const options = Elements.selectNomePlano.querySelectorAll("option");
+  let encontrou = false;
+
+  for (let option of options) {
+    if (
+      option.value === codigoDigitado ||
+      option.dataset.codigo === codigoDigitado
+    ) {
+      Elements.selectNomePlano.value = option.value;
+      encontrou = true;
+      break;
+    }
+  }
+
+  if (!encontrou) {
+    window.Sistema.Toast.warning(
+      "Plano não encontrado",
+      `O código de plano ${codigoDigitado} não existe.`
+    );
+  }
+}
+
+/**
+ * Abre o modal de seleção de empresas
+ */
+function abrirModalEmpresa() {
+  Elements.modalEmpresa.classList.remove("hidden");
+  AppState.empresaSelecionadaTemp = null;
+  atualizarBotaoConfirmar();
+  Elements.modalInputFiltro.value = "";
+  renderizarListaModal();
+  setTimeout(() => Elements.modalInputFiltro.focus(), 100);
+}
+
+/**
+ * Fecha o modal de seleção de empresas
+ */
+function fecharModalEmpresa() {
+  Elements.modalEmpresa.classList.add("hidden");
+}
+
+/**
+ * Renderiza a lista de empresas no modal com filtro opcional
+ * @param {string} termo - Termo de busca para filtrar empresas
+ */
+function renderizarListaModal(termo = "") {
+  Elements.modalTbody.innerHTML = "";
+
+  const empresas = window.Sistema.Dados.empresas || [];
+  const termoLower = termo.toLowerCase();
+
+  const filtradas = empresas.filter(
+    (emp) =>
+      emp.cod.toString().includes(termoLower) ||
+      emp.nome.toLowerCase().includes(termoLower)
+  );
+
+  filtradas.forEach((emp) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${emp.cod}</strong></td>
+      <td>${emp.nome}</td>
+    `;
+
+    tr.addEventListener("click", () => selecionarLinha(tr, emp));
+    tr.addEventListener("dblclick", () => {
+      selecionarLinha(tr, emp);
+      confirmarSelecaoEmpresa();
     });
 
-    modalContador.textContent = `${filtradas.length} empresas listadas`;
+    Elements.modalTbody.appendChild(tr);
+  });
+
+  Elements.modalContador.textContent = `${filtradas.length} empresas listadas`;
 }
 
-// 4. Lógica de Seleção Visual
+/**
+ * Marca uma linha como selecionada no modal
+ * @param {HTMLElement} tr - Elemento TR da linha clicada
+ * @param {Object} empresa - Dados da empresa selecionada
+ */
 function selecionarLinha(tr, empresa) {
-    // Remove seleção anterior
-    const anterior = modalTbody.querySelector('.selected');
-    if (anterior) anterior.classList.remove('selected');
+  const anterior = Elements.modalTbody.querySelector(".selected");
+  if (anterior) anterior.classList.remove("selected");
 
-    // Adiciona nova seleção
-    tr.classList.add('selected');
-    empresaSelecionadaTemp = empresa;
-    atualizarEstadoBotaoConfirmar();
+  tr.classList.add("selected");
+  AppState.empresaSelecionadaTemp = empresa;
+  atualizarBotaoConfirmar();
 }
 
-function atualizarEstadoBotaoConfirmar() {
-    if (empresaSelecionadaTemp) {
-        btnConfirmarSelecao.removeAttribute('disabled');
-    } else {
-        btnConfirmarSelecao.setAttribute('disabled', 'true');
-    }
+/**
+ * Atualiza o estado do botão confirmar baseado na seleção
+ */
+function atualizarBotaoConfirmar() {
+  if (AppState.empresaSelecionadaTemp) {
+    Elements.btnConfirmarSelecao.removeAttribute("disabled");
+  } else {
+    Elements.btnConfirmarSelecao.setAttribute("disabled", "true");
+  }
 }
 
-// 5. Filtro em Tempo Real
-modalInputFiltro.addEventListener('input', (e) => {
-    renderizarListaModal(e.target.value);
-});
-
-// 6. Confirmar Seleção
+/**
+ * Confirma a seleção de empresa e fecha o modal
+ */
 function confirmarSelecaoEmpresa() {
-    if (empresaSelecionadaTemp) {
-        // Usa a função existente do seu código para preencher
-        preencherCampos(empresaSelecionadaTemp);
-        modalEmpresa.classList.add('hidden');
-
-        // Opcional: focar no próximo campo (Data Inicial)
-        document.getElementById('data-ini').focus();
-    }
+  if (AppState.empresaSelecionadaTemp) {
+    preencherCamposEmpresa(AppState.empresaSelecionadaTemp);
+    fecharModalEmpresa();
+    Elements.inputDataIni.focus();
+  }
 }
 
-btnConfirmarSelecao.addEventListener('click', confirmarSelecaoEmpresa);
+/**
+ * Abre o diálogo de seleção de pasta do sistema
+ */
+async function selecionarPasta() {
+  const caminho = await window.Sistema.Funcoes.selecionarPasta();
+  if (caminho) {
+    Elements.inputCaminho.value = caminho;
+    Elements.inputCaminho.dispatchEvent(new Event("input"));
+  }
+}
+
+/**
+ * Valida e executa a geração do relatório fiscal
+ */
+function executarRelatorio() {
+  const camposObrigatorios = [
+    Elements.inputEmpresa.value,
+    Elements.inputDataIni.value,
+    Elements.inputDataFim.value,
+    Elements.selectNomePlano.value,
+    Elements.inputCaminho.value,
+  ];
+
+  if (camposObrigatorios.some((campo) => !campo)) {
+    window.Sistema.Toast.warning(
+      "Campos obrigatórios",
+      "Preencha todos os campos para processar o relatório."
+    );
+    return;
+  }
+
+  window.Sistema.Toast.info("Processando", "Gerando relatório...");
+
+  // TODO: Implementar chamada ao backend
+  // window.Sistema.Funcoes.gerarRelatorio({
+  //   empresa: Elements.inputEmpresa.value,
+  //   dataIni: Elements.inputDataIni.value,
+  //   dataFim: Elements.inputDataFim.value,
+  //   plano: Elements.selectNomePlano.value,
+  //   tipo: document.getElementById("select-tipo").value,
+  //   formato: document.getElementById("select-formato").value,
+  //   caminho: Elements.inputCaminho.value
+  // });
+}
+
+/**
+ * Configura todos os event listeners da página
+ */
+function configurarEventos() {
+  // Eventos do campo empresa
+  Elements.inputEmpresa.addEventListener("blur", () =>
+    setTimeout(() => autoPreencherEmpresa(Elements.inputEmpresa), 100)
+  );
+
+  Elements.inputEmpresa.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      autoPreencherEmpresa(Elements.inputEmpresa);
+      Elements.inputNome.focus();
+    }
+  });
+
+  // Eventos do campo nome
+  Elements.inputNome.addEventListener("blur", () =>
+    setTimeout(() => autoPreencherEmpresa(Elements.inputNome), 100)
+  );
+
+  Elements.inputNome.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      autoPreencherEmpresa(Elements.inputNome);
+    }
+  });
+
+  // Eventos de plano de contas
+  Elements.selectNomePlano.addEventListener("change", () => {
+    const optionSelecionada =
+      Elements.selectNomePlano.options[Elements.selectNomePlano.selectedIndex];
+    Elements.inputCodPlano.value =
+      optionSelecionada.dataset.codigo || Elements.selectNomePlano.value;
+  });
+
+  Elements.inputCodPlano.addEventListener("blur", sincronizarPlanoPorCodigo);
+
+  Elements.inputCodPlano.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sincronizarPlanoPorCodigo();
+    }
+  });
+
+  // Eventos dos botões principais
+  Elements.btnBuscarEmpresa.addEventListener("click", abrirModalEmpresa);
+  Elements.btnProcurar.addEventListener("click", selecionarPasta);
+  Elements.btnExecutar.addEventListener("click", executarRelatorio);
+
+  // Eventos do modal
+  Elements.btnsFecharModal.forEach((btn) => {
+    btn.addEventListener("click", fecharModalEmpresa);
+  });
+
+  Elements.modalEmpresa.addEventListener("click", (e) => {
+    if (e.target === Elements.modalEmpresa) {
+      fecharModalEmpresa();
+    }
+  });
+
+  Elements.modalInputFiltro.addEventListener("input", (e) => {
+    renderizarListaModal(e.target.value);
+  });
+
+  Elements.btnConfirmarSelecao.addEventListener(
+    "click",
+    confirmarSelecaoEmpresa
+  );
+}
+
+// Inicializa a aplicação quando o DOM estiver pronto
+inicializar();

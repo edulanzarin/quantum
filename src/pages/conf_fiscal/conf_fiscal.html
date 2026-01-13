@@ -1,168 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Conferência Fiscal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/global.css">
-    <link rel="stylesheet" href="conf_fiscal.css">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/global.css" />
+    <link rel="stylesheet" href="conf_fiscal.css" />
+  </head>
 
-<body>
+  <body>
     <aside id="sidebar-container"></aside>
 
     <main>
-        <div class="content-wrapper">
-
-            <div class="main-card">
-                <div class="card-header">
-                    <div class="header-title">
-                        <h2>Conferência Fiscal</h2>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <form class="compact-grid">
-
-                        <div class="input-group span-2">
-                            <label>Cód. Empresa</label>
-                            <div class="input-with-icon">
-                                <input type="text" id="input-codigoEmpresa" placeholder="000" autocomplete="off">
-                                <button type="button" id="btn-buscar-empresa" title="Pesquisar Empresa">
-                                    <span class="material-icons-round">search</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="input-group span-10">
-                            <label>Nome da Empresa</label>
-                            <input type="text" id="input-nomeEmpresa" placeholder="Pesquise a empresa..."
-                                autocomplete="off">
-                        </div>
-
-                        <div class="input-group span-2">
-                            <label>Data Inicial</label>
-                            <input type="date" id="data-ini">
-                        </div>
-
-                        <div class="input-group span-2">
-                            <label>Data Final</label>
-                            <input type="date" id="data-fim">
-                        </div>
-
-                        <div class="input-group span-2">
-                            <label>Cód. Plano</label>
-                            <input type="text" id="input-codigoPlano" placeholder="0" autocomplete="off">
-                        </div>
-
-                        <div class="input-group span-6">
-                            <label>Plano de Contas</label>
-                            <select id="select-nomePlano" required>
-                                <option value="" disabled selected>Selecione...</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group span-2">
-                            <label>Tipo</label>
-                            <select id="select-tipo">
-                                <option value="entradas">Entradas</option>
-                                <option value="saidas">Saídas</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group span-2">
-                            <label>Formato</label>
-                            <select id="select-formato">
-                                <option value="xlsx">Excel (.xlsx)</option>
-                                <option value="csv">CSV (.csv)</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group span-8">
-                            <label>Salvar em</label>
-                            <div class="input-with-icon">
-                                <input type="text" id="input-caminho" readonly placeholder="C:/...">
-                                <button type="button" id="btn-procurar" title="Selecionar Pasta">
-                                    <span class="material-icons-round">folder_open</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="span-12 action-area">
-                            <button type="button" id="btn-executar" class="btn btn-primary">
-                                Iniciar Conferência
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-
-                <div id="loading-area" class="loading-container hidden">
-                    <div class="spinner"></div>
-                    <p class="loading-text">Processando dados fiscais...</p>
-                    <small>Isso pode levar alguns instantes</small>
-                </div>
-
-                <div id="success-area" class="success-container hidden">
-                    <div class="success-icon">
-                        <span class="material-icons-round">check_circle</span>
-                    </div>
-                    <p>Relatório gerado com sucesso!</p>
-                    <button type="button" id="btn-voltar" class="btn-text">Realizar nova consulta</button>
-                </div>
+      <div class="content-wrapper">
+        <div class="main-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h2>Conferência Fiscal</h2>
             </div>
+          </div>
 
+          <div class="card-body">
+            <form class="compact-grid">
+              <div class="input-group span-2">
+                <label>Cód. Empresa</label>
+                <div class="input-with-icon">
+                  <input
+                    type="text"
+                    id="input-codigoEmpresa"
+                    placeholder="000"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    id="btn-buscar-empresa"
+                    title="Pesquisar Empresa"
+                  >
+                    <span class="material-icons-round">search</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="input-group span-10">
+                <label>Nome da Empresa</label>
+                <input
+                  type="text"
+                  id="input-nomeEmpresa"
+                  placeholder="Pesquise a empresa..."
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="input-group span-2">
+                <label>Data Inicial</label>
+                <input type="date" id="data-ini" />
+              </div>
+
+              <div class="input-group span-2">
+                <label>Data Final</label>
+                <input type="date" id="data-fim" />
+              </div>
+
+              <div class="input-group span-2">
+                <label>Cód. Plano</label>
+                <input
+                  type="text"
+                  id="input-codigoPlano"
+                  placeholder="0"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="input-group span-6">
+                <label>Plano de Contas</label>
+                <select id="select-nomePlano" required>
+                  <option value="" disabled selected>Selecione...</option>
+                </select>
+              </div>
+
+              <div class="input-group span-2">
+                <label>Tipo</label>
+                <select id="select-tipo">
+                  <option value="entradas">Entradas</option>
+                  <option value="saidas">Saídas</option>
+                </select>
+              </div>
+
+              <div class="input-group span-2">
+                <label>Formato</label>
+                <select id="select-formato">
+                  <option value="xlsx">Excel (.xlsx)</option>
+                  <option value="csv">CSV (.csv)</option>
+                </select>
+              </div>
+
+              <div class="input-group span-8">
+                <label>Salvar em</label>
+                <div class="input-with-icon">
+                  <input
+                    type="text"
+                    id="input-caminho"
+                    readonly
+                    placeholder="C:/..."
+                  />
+                  <button
+                    type="button"
+                    id="btn-procurar"
+                    title="Selecionar Pasta"
+                  >
+                    <span class="material-icons-round">folder_open</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="span-12 action-area">
+                <button type="button" id="btn-executar" class="btn btn-primary">
+                  Carregar
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </main>
 
     <div id="modal-selecao-empresa" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3>SELECIONAR EMPRESA</h3>
-            </div>
-
-            <div class="modal-body">
-                <div class="modal-search-box">
-                    <span class="material-icons-round">search</span>
-                    <input type="text" id="modal-input-filtro" placeholder="Digite código ou nome para filtrar...">
-                </div>
-
-                <div class="tabela-container">
-                    <table class="tabela-empresas">
-                        <thead>
-                            <tr>
-                                <th width="80">Cód.</th>
-                                <th>Razão Social</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modal-lista-tbody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <div class="footer-info">
-                    <small id="modal-contador">0 empresas listadas</small>
-                </div>
-                <div class="footer-actions">
-                    <button type="button" class="btn btn-danger-outline btn-close-modal">
-                        Cancelar
-                    </button>
-
-                    <button type="button" id="btn-confirmar-selecao" class="btn btn-primary" disabled>
-                        Confirmar
-                    </button>
-                </div>
-            </div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>SELECIONAR EMPRESA</h3>
         </div>
+
+        <div class="modal-body">
+          <div class="modal-search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="modal-input-filtro"
+              placeholder="Digite código ou nome para filtrar..."
+            />
+          </div>
+
+          <div class="tabela-container">
+            <table class="tabela-empresas">
+              <thead>
+                <tr>
+                  <th width="80">Cód.</th>
+                  <th>Razão Social</th>
+                </tr>
+              </thead>
+              <tbody id="modal-lista-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="footer-info">
+            <small id="modal-contador">0 empresas listadas</small>
+          </div>
+          <div class="footer-actions">
+            <button
+              type="button"
+              class="btn btn-danger-outline btn-close-modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              id="btn-confirmar-selecao"
+              class="btn btn-primary"
+              disabled
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="../../components/menu.js"></script>
     <script src="../../assets/global.js"></script>
     <script src="conf_fiscal.js"></script>
-</body>
-
+  </body>
 </html>

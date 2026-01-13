@@ -1,325 +1,178 @@
+/**
+ * Sistema Global - Gerenciamento de dados e funcionalidades compartilhadas
+ */
+
 window.Sistema = window.Sistema || {};
 
+/* Armazenamento de dados globais */
 window.Sistema.Dados = {
-    empresas: []
+  empresas: [],
 };
 
+/* Funções utilitárias do sistema */
 window.Sistema.Funcoes = {
-    solicitarEmpresas: function () {
-        console.log("[Sistema] Solicitando lista de empresas ao Python...");
-        if (window.api) {
-            window.api.rodarPython({
-                modulo: 'geral',
-                acao: 'listar_empresas',
-                dados: {}
-            });
-        } else {
-            console.error("Erro: API do Electron não carregada.");
-        }
-    },
+  /**
+   * Solicita a lista de empresas do backend Python
+   */
+  solicitarEmpresas() {
+    console.log("[Sistema] Solicitando lista de empresas ao Python...");
 
-    filtrarEmpresas: function (textoDigitado) {
-        if (!window.Sistema.Dados.empresas.length) return [];
-
-        textoDigitado = textoDigitado.toLowerCase();
-
-        return window.Sistema.Dados.empresas.filter(emp =>
-            String(emp.cod).toLowerCase().includes(textoDigitado) ||
-            String(emp.texto_exibicao).toLowerCase().includes(textoDigitado)
-        ).slice(0, 10);
+    if (window.api) {
+      window.api.rodarPython({
+        modulo: "geral",
+        acao: "listar_empresas",
+        dados: {},
+      });
+    } else {
+      console.error("Erro: API do Electron não carregada.");
     }
+  },
+
+  /**
+   * Filtra empresas baseado no texto digitado
+   * @param {string} textoDigitado - Texto para filtrar
+   * @returns {Array} Lista filtrada de empresas (máximo 10)
+   */
+  filtrarEmpresas(textoDigitado) {
+    if (!window.Sistema.Dados.empresas.length) return [];
+
+    const termo = textoDigitado.toLowerCase();
+
+    return window.Sistema.Dados.empresas
+      .filter(
+        (emp) =>
+          String(emp.cod).toLowerCase().includes(termo) ||
+          String(emp.texto_exibicao).toLowerCase().includes(termo)
+      )
+      .slice(0, 10);
+  },
+
+  /**
+   * Abre diálogo para seleção de pasta
+   * @returns {Promise<string|null>} Caminho da pasta selecionada ou null
+   */
+  async selecionarPasta() {
+    if (!window.api?.selecionarPasta) {
+      console.error("API de seleção de pasta não disponível");
+      return null;
+    }
+
+    return await window.api.selecionarPasta();
+  },
+
+  /**
+   * Abre diálogo para seleção de arquivo
+   * @param {Object} options - Opções para filtros de arquivo
+   * @param {Array} options.filters - Filtros de tipo de arquivo (ex: [{name: 'Excel', extensions: ['xlsx']}])
+   * @returns {Promise<string|null>} Caminho do arquivo selecionado ou null
+   */
+  async selecionarArquivo(options = {}) {
+    if (!window.api?.selecionarArquivo) {
+      console.error("API de seleção de arquivo não disponível");
+      return null;
+    }
+
+    return await window.api.selecionarArquivo(options);
+  },
 };
 
-/* ============================================
-   SISTEMA DE NOTIFICAÇÕES TOAST
-   ============================================ */
-
+/* Sistema de notificações Toast */
 window.Sistema.Toast = {
-    container: null,
+  container: null,
 
-    // Inicializa o container de toasts (chamado automaticamente)
-    init: function () {
-        if (!this.container) {
-            this.container = document.createElement('div');
-            this.container.id = 'toast-container';
-            document.body.appendChild(this.container);
-        }
-    },
-
-    // Cria um toast genérico
-    show: function (options) {
-        this.init();
-
-        const toast = document.createElement('div');
-        toast.className = `toast ${options.type || 'info'}`;
-
-        // Ícones para cada tipo
-        const icons = {
-            success: 'check_circle',
-            error: 'cancel',
-            warning: 'warning',
-            info: 'info'
-        };
-
-        const icon = icons[options.type] || 'info';
-
-        toast.innerHTML = `
-            <div class="toast-icon">
-                <span class="material-icons-round" style="font-size: 20px;">${icon}</span>
-            </div>
-            <div class="toast-content">
-                ${options.title ? `<div class="toast-title">${options.title}</div>` : ''}
-                ${options.message ? `<div class="toast-message">${options.message}</div>` : ''}
-            </div>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <span class="material-icons-round" style="font-size: 18px;">close</span>
-            </button>
-        `;
-
-        this.container.appendChild(toast);
-
-        // Remove automaticamente após o tempo especificado (padrão: 4 segundos)
-        const duration = options.duration !== undefined ? options.duration : 4000;
-
-        if (duration > 0) {
-            setTimeout(() => {
-                toast.classList.add('removing');
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
-        }
-
-        return toast;
-    },
-
-    // Atalhos para tipos específicos
-    success: function (title, message, duration) {
-        return this.show({
-            type: 'success',
-            title: title,
-            message: message,
-            duration: duration
-        });
-    },
-
-    error: function (title, message, duration) {
-        return this.show({
-            type: 'error',
-            title: title,
-            message: message,
-            duration: duration
-        });
-    },
-
-    warning: function (title, message, duration) {
-        return this.show({
-            type: 'warning',
-            title: title,
-            message: message,
-            duration: duration
-        });
-    },
-
-    info: function (title, message, duration) {
-        return this.show({
-            type: 'info',
-            title: title,
-            message: message,
-            duration: duration
-        });
+  /**
+   * Inicializa o container de toasts
+   */
+  init() {
+    if (!this.container) {
+      this.container = document.createElement("div");
+      this.container.id = "toast-container";
+      document.body.appendChild(this.container);
     }
-};
+  },
 
-/* ============================================
-   ADICIONAR AO FINAL DO global.js EXISTENTE
-   ============================================ */
+  /**
+   * Exibe um toast com as opções fornecidas
+   * @param {Object} options - Configurações do toast
+   * @param {string} options.type - Tipo do toast (success, error, warning, info)
+   * @param {string} options.title - Título do toast
+   * @param {string} options.message - Mensagem do toast
+   * @param {number} options.duration - Duração em ms (0 = permanente, padrão: 4000)
+   * @returns {HTMLElement} Elemento do toast criado
+   */
+  show(options) {
+    this.init();
 
-/* ============================================
-   UTILITÁRIOS DE MODAL
-   ============================================ */
+    const toast = document.createElement("div");
+    toast.className = `toast ${options.type || "info"}`;
 
-window.Sistema.Modal = {
-    // Abre um modal
-    abrir: function (modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.add('show');
+    const icons = {
+      success: "check_circle",
+      error: "cancel",
+      warning: "warning",
+      info: "info",
+    };
+
+    const icon = icons[options.type] || "info";
+
+    toast.innerHTML = `
+      <div class="toast-icon">
+        <span class="material-icons-round" style="font-size: 20px;">${icon}</span>
+      </div>
+      <div class="toast-content">
+        ${
+          options.title ? `<div class="toast-title">${options.title}</div>` : ""
         }
-    },
-
-    // Fecha um modal
-    fechar: function (modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.remove('show');
+        ${
+          options.message
+            ? `<div class="toast-message">${options.message}</div>`
+            : ""
         }
-    },
+      </div>
+      <button class="toast-close" onclick="this.parentElement.remove()">
+        <span class="material-icons-round" style="font-size: 18px;">close</span>
+      </button>
+    `;
 
-    // Limpa campos de um modal
-    limparCampos: function (modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            const inputs = modal.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                if (input.type === 'checkbox' || input.type === 'radio') {
-                    input.checked = false;
-                } else {
-                    input.value = '';
-                }
-            });
-        }
-    },
+    this.container.appendChild(toast);
 
-    // Configura fechamento ao clicar fora
-    configurarFechamentoExterno: function (modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.fechar(modalId);
-                }
-            });
-        }
+    const duration = options.duration !== undefined ? options.duration : 4000;
+
+    if (duration > 0) {
+      setTimeout(() => {
+        toast.classList.add("removing");
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
     }
-};
 
-/* ============================================
-   UTILITÁRIOS DE TABELA
-   ============================================ */
+    return toast;
+  },
 
-window.Sistema.Tabela = {
-    // Renderiza estado vazio
-    renderizarVazio: function (tbody, colspan, titulo, mensagem) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="${colspan}">
-                    <div class="empty-state">
-                        <span class="material-icons-round">folder_open</span>
-                        <h3>${titulo}</h3>
-                        <p>${mensagem}</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-    },
+  /**
+   * Exibe toast de sucesso
+   */
+  success(title, message, duration) {
+    return this.show({ type: "success", title, message, duration });
+  },
 
-    // Filtra dados baseado em múltiplos campos
-    filtrar: function (dados, termo, campos) {
-        if (!termo) return dados;
+  /**
+   * Exibe toast de erro
+   */
+  error(title, message, duration) {
+    return this.show({ type: "error", title, message, duration });
+  },
 
-        termo = termo.toLowerCase().trim();
+  /**
+   * Exibe toast de aviso
+   */
+  warning(title, message, duration) {
+    return this.show({ type: "warning", title, message, duration });
+  },
 
-        return dados.filter(item => {
-            return campos.some(campo => {
-                const valor = item[campo];
-                if (Array.isArray(valor)) {
-                    return valor.some(v => String(v).toLowerCase().includes(termo));
-                }
-                return String(valor).toLowerCase().includes(termo);
-            });
-        });
-    }
-};
-
-/* ============================================
-   UTILITÁRIOS DE VALIDAÇÃO
-   ============================================ */
-
-window.Sistema.Validacao = {
-    // Valida se campos estão preenchidos
-    camposObrigatorios: function (campos) {
-        const camposVazios = [];
-
-        campos.forEach(campo => {
-            const valor = campo.value.trim();
-            if (!valor) {
-                camposVazios.push(campo.placeholder || campo.name || 'Campo');
-            }
-        });
-
-        if (camposVazios.length > 0) {
-            window.Sistema.Toast.warning(
-                'Campos obrigatórios',
-                `Preencha: ${camposVazios.join(', ')}`
-            );
-            return false;
-        }
-
-        return true;
-    }
-};
-
-/* ============================================
-   UTILITÁRIOS DE NAVEGAÇÃO
-   ============================================ */
-
-window.Sistema.Navegacao = {
-    // Redireciona com confirmação se houver mudanças
-    irPara: function (url, forcar = false) {
-        if (forcar) {
-            window.location.href = url;
-            return;
-        }
-
-        // Pode adicionar lógica de verificação de mudanças aqui
-        window.location.href = url;
-    },
-
-    // Volta para página anterior
-    voltar: function () {
-        window.history.back();
-    },
-
-    // Recarrega página
-    recarregar: function () {
-        window.location.reload();
-    }
-};
-
-/* ============================================
-   UTILITÁRIOS DE CONFIRMAÇÃO
-   ============================================ */
-
-window.Sistema.Confirmacao = {
-    // Confirma exclusão
-    excluir: function (itemNome, callback) {
-        if (confirm(`Deseja realmente excluir "${itemNome}"?`)) {
-            callback();
-        }
-    },
-
-    // Confirma ação genérica
-    acao: function (mensagem, callback) {
-        if (confirm(mensagem)) {
-            callback();
-        }
-    }
-};
-
-/* ============================================
-   UTILITÁRIOS DE FORMATAÇÃO
-   ============================================ */
-
-window.Sistema.Formato = {
-    // Formata número com separadores
-    numero: function (valor, decimais = 2) {
-        return Number(valor).toLocaleString('pt-BR', {
-            minimumFractionDigits: decimais,
-            maximumFractionDigits: decimais
-        });
-    },
-
-    // Formata moeda
-    moeda: function (valor) {
-        return Number(valor).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        });
-    },
-
-    // Formata data
-    data: function (valor) {
-        if (!valor) return '';
-        const data = new Date(valor);
-        return data.toLocaleDateString('pt-BR');
-    }
+  /**
+   * Exibe toast de informação
+   */
+  info(title, message, duration) {
+    return this.show({ type: "info", title, message, duration });
+  },
 };
