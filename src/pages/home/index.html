@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Jorlan Contábil</title>
+    <title>Painel - Jorlan Automação</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -15,63 +15,98 @@
 
 <body>
 
-    <aside id="sidebar-container"></aside>
+    <aside id="sidebar-container">
+    </aside>
 
     <main>
         <header class="top-bar">
-            <h2>Dashboard Inicial</h2>
-            <div class="user-info">
-                <span>Allday neguin</span>
-                <span class="material-icons-round">account_circle</span>
+            <h2 class="page-title">Painel de Controle</h2>
+
+            <div class="system-status">
+                <span class="status-dot pulsing"></span>
+                <span>Serviço Online</span>
             </div>
         </header>
 
         <div class="content-wrapper">
 
-            <div class="welcome-banner">
-                <div class="text-content">
-                    <h1 id="greeting-msg">Bem-vindo de volta!</h1>
-                    <p>O sistema de automação está pronto. Nenhuma pendência crítica hoje.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="label">Processos Hoje</span>
+                    <strong class="value">0</strong>
                 </div>
-                <span class="material-icons-round hero-icon">rocket_launch</span>
+                <div class="stat-card">
+                    <span class="label">Erros / Falhas</span>
+                    <strong class="value text-danger">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Fila de Espera</span>
+                    <strong class="value">Vazia</strong>
+                </div>
+                <div class="stat-card highlight">
+                    <span class="label">Uptime</span>
+                    <strong class="value">00:12:45</strong>
+                </div>
             </div>
 
-            <div class="dashboard-grid">
+            <section class="section-container">
+                <h3 class="section-title">Execução Manual</h3>
 
-                <div class="card-summary">
-                    <div class="card-icon blue">
-                        <span class="material-icons-round">receipt_long</span>
-                    </div>
-                    <div class="card-info">
-                        <h3>Conferência Fiscal</h3>
-                        <p>Aguardando execução</p>
-                    </div>
-                    <button id="btn-go-fiscal" class="btn-icon">
-                        <span class="material-icons-round">arrow_forward</span>
+                <div class="launch-grid">
+                    <button id="btn-conf-fiscal" class="launch-card primary">
+                        <div class="icon-box">
+                            <span class="material-icons-round">receipt_long</span>
+                        </div>
+                        <div class="card-text">
+                            <h4>Conferência Fiscal</h4>
+                            <p>Análise de notas e impostos</p>
+                        </div>
+                        <span class="material-icons-round arrow">arrow_forward</span>
+                    </button>
+
+                    <button class="launch-card">
+                        <div class="icon-box">
+                            <span class="material-icons-round">folder_zip</span>
+                        </div>
+                        <div class="card-text">
+                            <h4>Baixar XMLs</h4>
+                            <p>Busca automática na SEFAZ</p>
+                        </div>
+                    </button>
+
+                    <button class="launch-card">
+                        <div class="icon-box">
+                            <span class="material-icons-round">description</span>
+                        </div>
+                        <div class="card-text">
+                            <h4>Gerar Relatórios</h4>
+                            <p>Consolidado mensal</p>
+                        </div>
                     </button>
                 </div>
+            </section>
 
-                <div class="card-summary">
-                    <div class="card-icon green">
-                        <span class="material-icons-round">check_circle</span>
-                    </div>
-                    <div class="card-info">
-                        <h3>Processos Concluídos</h3>
-                        <p>0 execuções hoje</p>
-                    </div>
+            <section class="section-container">
+                <div class="header-split">
+                    <h3 class="section-title">Log de Execução</h3>
+                    <button class="btn-clear">Limpar</button>
                 </div>
 
-                <div class="card-summary">
-                    <div class="card-icon purple">
-                        <span class="material-icons-round">settings</span>
+                <div class="console-window">
+                    <div class="log-line">
+                        <span class="time">[10:30:05]</span>
+                        <span class="msg system">Sistema iniciado com sucesso. v1.0.0</span>
                     </div>
-                    <div class="card-info">
-                        <h3>Versão do Sistema</h3>
-                        <p>v1.0.0 (Alpha)</p>
+                    <div class="log-line">
+                        <span class="time">[10:30:06]</span>
+                        <span class="msg info">Conectado ao banco de dados local.</span>
+                    </div>
+                    <div class="log-line">
+                        <span class="time">[10:30:06]</span>
+                        <span class="msg success">Driver do Chrome carregado. Aguardando comando.</span>
                     </div>
                 </div>
-
-            </div>
+            </section>
 
         </div>
     </main>

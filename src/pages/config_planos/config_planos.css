@@ -1,0 +1,29 @@
+/* ============================================
+   config_planos.css - Apenas estilos específicos
+   Os estilos comuns estão em global.css
+   ============================================ */
+
+.planos-container {
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Larguras específicas das colunas da tabela */
+.table-container th:nth-child(1) {
+    width: 80px;
+}
+
+.table-container th:nth-child(3) {
+    width: 100px;
+    text-align: center;
+}
+
+.plano-codigo {
+    color: #6c757d;
+    font-weight: 500;
+}

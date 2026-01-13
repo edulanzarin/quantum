@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Configurar Planos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/global.css">
+    <link rel="stylesheet" href="config_planos.css">
+</head>
+
+<body>
+    <aside id="sidebar-container"></aside>
+
+    <main>
+        <header class="page-header">
+            <h2>CONFIGURAR PLANOS</h2>
+            <button id="btn-novo-plano" class="btn-add">
+                <span class="material-icons-round">add</span>
+                Novo Plano
+            </button>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="plan-info-header">
+                <div class="input-wrapper" style="max-width: 150px;">
+                    <input type="text" id="input-codigo" placeholder=" " disabled>
+                    <label>Cód.</label>
+                </div>
+                <div class="input-wrapper" style="flex: 1;">
+                    <input type="text" id="input-nome" placeholder=" " required>
+                    <label>Nome do Plano de Conferência</label>
+                </div>
+            </div>
+
+            <div class="master-detail-container">
+                <aside class="master-side">
+                    <div class="side-header">
+                        <input type="text" id="input-busca-map" placeholder="Filtrar CFOP...">
+                        <button class="btn-small" onclick="abrirNovoMapeamento()">+</button>
+                    </div>
+                    <ul id="lista-cfops-master" class="custom-list">
+                    </ul>
+                </aside>
+
+                <section class="detail-side" id="editor-mapeamento">
+                    <div id="empty-detail" class="empty-state">
+                        <span class="material-icons-round">arrow_back</span>
+                        <p>Selecione um CFOP na lista para editar</p>
+                    </div>
+
+                    <div id="form-mapeamento" style="display: none;">
+                        <div class="detail-header">
+                            <h4>Mapeamento CFOP <span id="display-cfop-ativo"></span></h4>
+                        </div>
+                        <div class="detail-body">
+                            <div class="input-wrapper">
+                                <textarea id="modal-conta" rows="10" placeholder=" "></textarea>
+                                <label>Contas Contábeis (uma por linha)</label>
+                            </div>
+                            <p class="hint">Dica: Você pode colar uma coluna do Excel aqui.</p>
+                        </div>
+                        <div class="detail-footer">
+                            <button class="btn-danger-light" id="btn-excluir-ativo">Excluir CFOP</button>
+                            <button class="btn-primary" id="btn-atualizar-ativo">Atualizar Lista</button>
+                        </div>
+                    </div>
+                </section>
+                master-detail-container
+            </div>
+        </div>
+    </main>
+
+    <script src="../../components/menu.js"></script>
+    <script src="../../assets/global.js"></script>
+    <script src="config_planos.js"></script>
+</body>
+
+</html>

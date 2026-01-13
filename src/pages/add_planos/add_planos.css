@@ -1,0 +1,62 @@
+/* ============================================
+   add_planos.css - Apenas estilos específicos
+   Os estilos comuns estão em global.css
+   ============================================ */
+
+.page-header {
+    justify-content: space-between;
+}
+
+.plano-container {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Ajustes específicos da tabela de mapeamentos */
+.table-container th:nth-child(1) {
+    width: 150px;
+}
+
+.table-container th:nth-child(3) {
+    width: 80px;
+    text-align: center;
+}
+
+/* Ajustes específicos do botão adicionar mapeamento */
+.btn-add-map {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-add-map .material-icons-round {
+    font-size: 16px;
+}
+
+/* Estilo específico do botão primary no header */
+.btn-primary {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-primary:hover {
+    background: #0b5ed7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary .material-icons-round {
+    font-size: 18px;
+}
