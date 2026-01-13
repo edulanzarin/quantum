@@ -1,11 +1,10 @@
 /**
- * Conferência Fiscal - Módulo Principal
+ * Conferência Fiscal
  * Gerencia a interface de geração de relatórios fiscais
  */
 
 /* Elementos do DOM */
 const Elements = {
-  // Inputs principais
   inputEmpresa: document.getElementById("input-codigoEmpresa"),
   inputNome: document.getElementById("input-nomeEmpresa"),
   inputDataIni: document.getElementById("data-ini"),
@@ -14,18 +13,21 @@ const Elements = {
   selectNomePlano: document.getElementById("select-nomePlano"),
   inputCaminho: document.getElementById("input-caminho"),
 
-  // Botões
   btnBuscarEmpresa: document.getElementById("btn-buscar-empresa"),
   btnProcurar: document.getElementById("btn-procurar"),
   btnExecutar: document.getElementById("btn-executar"),
 
-  // Modal
   modalEmpresa: document.getElementById("modal-selecao-empresa"),
   modalInputFiltro: document.getElementById("modal-input-filtro"),
   modalTbody: document.getElementById("modal-lista-tbody"),
   modalContador: document.getElementById("modal-contador"),
   btnConfirmarSelecao: document.getElementById("btn-confirmar-selecao"),
   btnsFecharModal: document.querySelectorAll(".btn-close-modal"),
+
+  cardBalancete: document.getElementById("card-balancete"),
+  loaderBalancete: document.getElementById("loader-balancete"),
+  containerTabela: document.getElementById("container-tabela"),
+  tbodyBalancete: document.getElementById("tbody-balancete"),
 };
 
 /* Estado da aplicação */
@@ -37,43 +39,88 @@ const AppState = {
  * Inicializa o módulo carregando dados e configurando eventos
  */
 function inicializar() {
+  configurarOuvinteBackend();
   carregarEmpresas();
   carregarPlanos();
   configurarEventos();
 }
 
 /**
- * Solicita a lista de empresas do backend
+ * Central de recebimento de dados do Python
+ * Escuta todas as respostas e distribui para as funções corretas
  */
-function carregarEmpresas() {
-  window.Sistema.Funcoes.solicitarEmpresas();
-
+function configurarOuvinteBackend() {
   window.api.aoReceberResposta((respostaTexto) => {
     try {
       const json = JSON.parse(respostaTexto);
+      console.log("[Frontend] Resposta recebida:", json);
 
-      if (json.sucesso && json.dados && Array.isArray(json.dados)) {
-        window.Sistema.Dados.empresas = json.dados;
-        console.log(`Empresas carregadas: ${json.dados.length}`);
+      if (!json.sucesso) {
+        Elements.loaderBalancete.classList.add("hidden");
+        window.Sistema.Toast.error("Erro", json.erro || "Erro desconhecido.");
+        return;
+      }
+
+      const dados = json.dados;
+      const acao = json.acao;
+
+      if (acao === "listar_empresas") {
+        processarListaEmpresas(dados);
+      } else if (acao === "gerar_bp") {
+        finalizarCarregamentoBalancete(dados);
       } else {
-        window.Sistema.Toast.error(
-          "Erro no Sistema",
-          json.erro || "Erro ao carregar empresas."
-        );
+        console.warn("[Frontend] Ação não reconhecida:", acao);
       }
     } catch (e) {
+      console.error("Erro ao processar resposta do backend:", e);
+      Elements.loaderBalancete.classList.add("hidden");
       window.Sistema.Toast.error(
         "Erro de Processamento",
-        "Não foi possível ler a resposta do servidor."
+        "Resposta inválida do servidor."
       );
-      console.error("Erro JSON:", e);
     }
   });
 }
 
 /**
+ * Processa a lista de empresas recebida do backend
+ */
+function processarListaEmpresas(dados) {
+  if (!Array.isArray(dados)) {
+    console.error("[Frontend] Dados de empresas inválidos:", dados);
+    window.Sistema.Toast.error(
+      "Erro",
+      "Formato de dados de empresas inválido."
+    );
+    return;
+  }
+
+  window.Sistema.Dados.empresas = dados;
+  console.log(`[Frontend] Empresas carregadas: ${dados.length}`);
+
+  if (dados.length === 0) {
+    window.Sistema.Toast.warning(
+      "Aviso",
+      "Nenhuma empresa encontrada no sistema."
+    );
+  }
+}
+
+/**
+ * Solicita a lista de empresas do backend
+ */
+function carregarEmpresas() {
+  console.log("[Frontend] Solicitando empresas...");
+
+  window.api.rodarPython({
+    modulo: "geral",
+    acao: "listar_empresas",
+    dados: {},
+  });
+}
+
+/**
  * Preenche os campos de empresa com os dados fornecidos
- * @param {Object} empresa - Objeto contendo cod e nome da empresa
  */
 function preencherCamposEmpresa(empresa) {
   Elements.inputEmpresa.value = empresa.cod;
@@ -82,7 +129,6 @@ function preencherCamposEmpresa(empresa) {
 
 /**
  * Tenta preencher automaticamente os campos de empresa baseado no valor digitado
- * @param {HTMLElement} campo - Campo que disparou o evento (código ou nome)
  */
 function autoPreencherEmpresa(campo) {
   const empresas = window.Sistema.Dados.empresas || [];
@@ -131,7 +177,6 @@ function carregarPlanos() {
 
 /**
  * Popula o select de planos com as opções fornecidas
- * @param {Array} planos - Array de objetos {cod, nome}
  */
 function preencherSelectPlanos(planos) {
   Elements.selectNomePlano.innerHTML =
@@ -177,6 +222,138 @@ function sincronizarPlanoPorCodigo() {
 }
 
 /**
+ * Valida e executa a geração do relatório fiscal
+ */
+function executarRelatorio() {
+  const camposObrigatorios = [
+    Elements.inputEmpresa.value,
+    Elements.inputDataIni.value,
+    Elements.inputDataFim.value,
+  ];
+
+  if (camposObrigatorios.some((campo) => !campo)) {
+    window.Sistema.Toast.warning("Atenção", "Preencha Empresa e Período.");
+    return;
+  }
+
+  Elements.cardBalancete.classList.remove("hidden");
+  Elements.loaderBalancete.classList.remove("hidden");
+  Elements.containerTabela.classList.add("hidden");
+  Elements.tbodyBalancete.innerHTML = "";
+
+  Elements.cardBalancete.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  console.log("[Frontend] Solicitando balancete...");
+
+  window.api.rodarPython({
+    modulo: "conf_fiscal",
+    acao: "gerar_bp",
+    dados: {
+      empresa: Elements.inputEmpresa.value,
+      dataInicio: Elements.inputDataIni.value,
+      dataFim: Elements.inputDataFim.value,
+    },
+  });
+}
+
+/**
+ * Chamado automaticamente quando os dados do balancete chegam
+ */
+function finalizarCarregamentoBalancete(listaDados) {
+  console.log(
+    "[Frontend] Finalizando carregamento do balancete. Registros:",
+    listaDados?.length || 0
+  );
+
+  Elements.loaderBalancete.classList.add("hidden");
+  Elements.containerTabela.classList.remove("hidden");
+
+  renderizarBalancete(listaDados);
+
+  if (listaDados && listaDados.length > 0) {
+    window.Sistema.Toast.success(
+      "Sucesso",
+      `Balancete carregado com ${listaDados.length} registros.`
+    );
+  } else {
+    window.Sistema.Toast.info(
+      "Aviso",
+      "Nenhum dado encontrado para o período."
+    );
+  }
+}
+
+/**
+ * Renderiza a tabela HTML do balancete
+ */
+function renderizarBalancete(listaDados) {
+  const formatador = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const tbody = document.getElementById("tbody-balancete");
+
+  if (!listaDados || listaDados.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #777;">Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  const htmlLinhas = listaDados
+    .map((item) => {
+      // Estilo visual: Nível 1 e 2 em Negrito
+      const isNegrito = item.nivel <= 2;
+      const estiloExtra = isNegrito
+        ? 'style="font-weight: bold; background-color: #f9f9f9;"'
+        : "";
+
+      // Indentação visual simples
+      const paddingDescricao = (item.nivel - 1) * 15;
+
+      // Sem eventos de clique, sem setinhas. Apenas dados.
+      return `
+        <tr ${estiloExtra}>
+            <td>${item.conta}</td>
+            <td>${item.classificacao}</td>
+            
+            <td style="padding-left: ${paddingDescricao}px;">
+                ${item.descricao}
+            </td>
+            
+            <td class="text-right">${formatador.format(item.valorDebito)}</td>
+            <td class="text-right">${formatador.format(item.valorCredito)}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  tbody.innerHTML = htmlLinhas;
+}
+
+/**
+ * Função global para expandir/recolher linhas filhas
+ * Chamada quando clica numa linha de nível 4
+ */
+window.toggleFilhos = function (classifPai) {
+  const filhas = document.querySelectorAll(`tr[data-pai="${classifPai}"]`);
+  const linhaPai = event.currentTarget;
+
+  if (filhas.length > 0) {
+    linhaPai.classList.toggle("expandido");
+
+    filhas.forEach((tr) => {
+      tr.classList.toggle("hidden");
+    });
+  } else {
+    window.Sistema.Toast.info(
+      "Info",
+      "Esta conta não possui subcontas analíticas lançadas."
+    );
+  }
+};
+
+/**
  * Abre o modal de seleção de empresas
  */
 function abrirModalEmpresa() {
@@ -197,7 +374,6 @@ function fecharModalEmpresa() {
 
 /**
  * Renderiza a lista de empresas no modal com filtro opcional
- * @param {string} termo - Termo de busca para filtrar empresas
  */
 function renderizarListaModal(termo = "") {
   Elements.modalTbody.innerHTML = "";
@@ -232,8 +408,6 @@ function renderizarListaModal(termo = "") {
 
 /**
  * Marca uma linha como selecionada no modal
- * @param {HTMLElement} tr - Elemento TR da linha clicada
- * @param {Object} empresa - Dados da empresa selecionada
  */
 function selecionarLinha(tr, empresa) {
   const anterior = Elements.modalTbody.querySelector(".selected");
@@ -278,44 +452,9 @@ async function selecionarPasta() {
 }
 
 /**
- * Valida e executa a geração do relatório fiscal
- */
-function executarRelatorio() {
-  const camposObrigatorios = [
-    Elements.inputEmpresa.value,
-    Elements.inputDataIni.value,
-    Elements.inputDataFim.value,
-    Elements.selectNomePlano.value,
-    Elements.inputCaminho.value,
-  ];
-
-  if (camposObrigatorios.some((campo) => !campo)) {
-    window.Sistema.Toast.warning(
-      "Campos obrigatórios",
-      "Preencha todos os campos para processar o relatório."
-    );
-    return;
-  }
-
-  window.Sistema.Toast.info("Processando", "Gerando relatório...");
-
-  // TODO: Implementar chamada ao backend
-  // window.Sistema.Funcoes.gerarRelatorio({
-  //   empresa: Elements.inputEmpresa.value,
-  //   dataIni: Elements.inputDataIni.value,
-  //   dataFim: Elements.inputDataFim.value,
-  //   plano: Elements.selectNomePlano.value,
-  //   tipo: document.getElementById("select-tipo").value,
-  //   formato: document.getElementById("select-formato").value,
-  //   caminho: Elements.inputCaminho.value
-  // });
-}
-
-/**
  * Configura todos os event listeners da página
  */
 function configurarEventos() {
-  // Eventos do campo empresa
   Elements.inputEmpresa.addEventListener("blur", () =>
     setTimeout(() => autoPreencherEmpresa(Elements.inputEmpresa), 100)
   );
@@ -328,7 +467,6 @@ function configurarEventos() {
     }
   });
 
-  // Eventos do campo nome
   Elements.inputNome.addEventListener("blur", () =>
     setTimeout(() => autoPreencherEmpresa(Elements.inputNome), 100)
   );
@@ -340,7 +478,6 @@ function configurarEventos() {
     }
   });
 
-  // Eventos de plano de contas
   Elements.selectNomePlano.addEventListener("change", () => {
     const optionSelecionada =
       Elements.selectNomePlano.options[Elements.selectNomePlano.selectedIndex];
@@ -357,12 +494,10 @@ function configurarEventos() {
     }
   });
 
-  // Eventos dos botões principais
   Elements.btnBuscarEmpresa.addEventListener("click", abrirModalEmpresa);
   Elements.btnProcurar.addEventListener("click", selecionarPasta);
   Elements.btnExecutar.addEventListener("click", executarRelatorio);
 
-  // Eventos do modal
   Elements.btnsFecharModal.forEach((btn) => {
     btn.addEventListener("click", fecharModalEmpresa);
   });
@@ -383,5 +518,4 @@ function configurarEventos() {
   );
 }
 
-// Inicializa a aplicação quando o DOM estiver pronto
 inicializar();

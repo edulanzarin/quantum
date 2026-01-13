@@ -45,22 +45,26 @@ ipcMain.on("run-python", (event, args) => {
     JSON.stringify(args.dados),
   ];
 
-  const pythonProcess = spawn("python", params);
+  const options = {
+    env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+  };
+
+  const pythonProcess = spawn("python", params, options);
+
+  let resultadoCompleto = "";
 
   pythonProcess.stdout.on("data", (data) => {
-    const resultado = data.toString();
-    event.sender.send("python-resposta", resultado);
+    resultadoCompleto += data.toString();
   });
 
   pythonProcess.stderr.on("data", (data) => {
-    console.error(`Erro Python: ${data}`);
-    event.sender.send(
-      "python-resposta",
-      JSON.stringify({
-        sucesso: false,
-        erro: data.toString(),
-      })
-    );
+    console.error(`Log Python: ${data}`);
+  });
+
+  pythonProcess.on("close", (code) => {
+    console.log(`Processo Python finalizado com código ${code}`);
+
+    event.sender.send("python-resposta", resultadoCompleto);
   });
 });
 

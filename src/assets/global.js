@@ -30,8 +30,6 @@ window.Sistema.Funcoes = {
 
   /**
    * Filtra empresas baseado no texto digitado
-   * @param {string} textoDigitado - Texto para filtrar
-   * @returns {Array} Lista filtrada de empresas (máximo 10)
    */
   filtrarEmpresas(textoDigitado) {
     if (!window.Sistema.Dados.empresas.length) return [];
@@ -42,14 +40,13 @@ window.Sistema.Funcoes = {
       .filter(
         (emp) =>
           String(emp.cod).toLowerCase().includes(termo) ||
-          String(emp.texto_exibicao).toLowerCase().includes(termo)
+          String(emp.nome).toLowerCase().includes(termo)
       )
       .slice(0, 10);
   },
 
   /**
    * Abre diálogo para seleção de pasta
-   * @returns {Promise<string|null>} Caminho da pasta selecionada ou null
    */
   async selecionarPasta() {
     if (!window.api?.selecionarPasta) {
@@ -62,9 +59,6 @@ window.Sistema.Funcoes = {
 
   /**
    * Abre diálogo para seleção de arquivo
-   * @param {Object} options - Opções para filtros de arquivo
-   * @param {Array} options.filters - Filtros de tipo de arquivo (ex: [{name: 'Excel', extensions: ['xlsx']}])
-   * @returns {Promise<string|null>} Caminho do arquivo selecionado ou null
    */
   async selecionarArquivo(options = {}) {
     if (!window.api?.selecionarArquivo) {
@@ -93,12 +87,6 @@ window.Sistema.Toast = {
 
   /**
    * Exibe um toast com as opções fornecidas
-   * @param {Object} options - Configurações do toast
-   * @param {string} options.type - Tipo do toast (success, error, warning, info)
-   * @param {string} options.title - Título do toast
-   * @param {string} options.message - Mensagem do toast
-   * @param {number} options.duration - Duração em ms (0 = permanente, padrão: 4000)
-   * @returns {HTMLElement} Elemento do toast criado
    */
   show(options) {
     this.init();

@@ -24,13 +24,13 @@ const sidebarHTML = `
             </button>
             
             <div class="submenu" id="submenu-fiscal">
-                <a href="../conf_fiscal/conf_fiscal.html" class="submenu-item" id="link-fiscal">
+                <a href="../conf_fiscal/conf_fiscal_bp.html" class="submenu-item" id="link-conf_fiscal_bp">
                     <span class="material-icons-round">play_arrow</span>
-                    <span>Executar Conferência</span>
+                    <span>Conferência BP</span>
                 </a>
-                <a href="../config_planos/config_planos.html" class="submenu-item" id="link-config-planos">
+                <a href="../conf_fiscal/conf_auditoria.html" class="submenu-item" id="link-conf_auditoria">
                     <span class="material-icons-round">tune</span>
-                    <span>Configurar Planos</span>
+                    <span>Conferência AUditoria</span>
                 </a>
             </div>
         </div>
@@ -39,34 +39,36 @@ const sidebarHTML = `
 `;
 
 // 2. Injeta no elemento <aside id="sidebar-container">
-document.getElementById('sidebar-container').innerHTML = sidebarHTML;
+document.getElementById("sidebar-container").innerHTML = sidebarHTML;
 
 // 3. Lógica para expansão do submenu
-const toggleFiscal = document.getElementById('toggle-fiscal');
-const submenuFiscal = document.getElementById('submenu-fiscal');
+const toggleFiscal = document.getElementById("toggle-fiscal");
+const submenuFiscal = document.getElementById("submenu-fiscal");
 
 // Verifica se estamos em alguma página do grupo Conferência Fiscal
 const currentPath = window.location.pathname;
-const isFiscalPage = currentPath.includes('conf_fiscal') || currentPath.includes('config_planos') || currentPath.includes('config_plano');
+const isFiscalPage =
+  currentPath.includes("conf_fiscal_bp") ||
+  currentPath.includes("conf_auditoria");
 
 // Se estiver em uma página fiscal, expande o menu automaticamente
 if (isFiscalPage) {
-    submenuFiscal.classList.add('expanded');
-    toggleFiscal.classList.add('active');
+  submenuFiscal.classList.add("expanded");
+  toggleFiscal.classList.add("active");
 }
 
 // Toggle ao clicar no menu principal
-toggleFiscal.addEventListener('click', (e) => {
-    e.preventDefault();
-    submenuFiscal.classList.toggle('expanded');
-    toggleFiscal.classList.toggle('active');
+toggleFiscal.addEventListener("click", (e) => {
+  e.preventDefault();
+  submenuFiscal.classList.toggle("expanded");
+  toggleFiscal.classList.toggle("active");
 });
 
 // 4. Marca a página atual como ativa
-if (currentPath.includes('index.html')) {
-    document.getElementById('link-home').classList.add('active');
-} else if (currentPath.includes('conf_fiscal.html')) {
-    document.getElementById('link-fiscal').classList.add('active');
-} else if (currentPath.includes('config_planos.html')) {
-    document.getElementById('link-config-planos').classList.add('active');
+if (currentPath.includes("index.html")) {
+  document.getElementById("link-home").classList.add("active");
+} else if (currentPath.includes("conf_fiscal_bp.html")) {
+  document.getElementById("link-conf_fiscal_bp").classList.add("active");
+} else if (currentPath.includes("conf_auditoria.html")) {
+  document.getElementById("link-conf_auditoria").classList.add("active");
 }

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Auditoria Fiscal vs Contábil</title>
+    <link href="../../assets/global.css" rel="stylesheet" />
+    <link href="conf_fiscal.css" rel="stylesheet" />
+  </head>
+  <body>
+    <main>
+      <div class="content-wrapper">
+        <div class="main-card">
+          <div class="card-header">
+            <h2>Auditoria: Fiscal x Contábil</h2>
+          </div>
+          <div class="card-body">
+            <form class="compact-grid">
+              <div class="input-group span-2">
+                <label>Empresa</label>
+                <input type="text" id="input-empresa" placeholder="Ex: 1" />
+              </div>
+              <div class="input-group span-2">
+                <label>Data Início</label>
+                <input type="date" id="input-data-ini" />
+              </div>
+              <div class="input-group span-2">
+                <label>Data Fim</label>
+                <input type="date" id="input-data-fim" />
+              </div>
+
+              <div class="input-group span-3">
+                <label>Conta Contábil (Mãe)</label>
+                <input
+                  type="text"
+                  id="input-conta"
+                  placeholder="Ex: 140 (Clientes)"
+                />
+                <small style="color: #666">ID da conta sintética</small>
+              </div>
+
+              <div class="input-group span-3">
+                <label>CFOPs (separados por vírgula)</label>
+                <input
+                  type="text"
+                  id="input-cfops"
+                  placeholder="Ex: 5101, 6101"
+                />
+              </div>
+
+              <div class="span-12 action-area">
+                <button type="button" id="btn-auditar" class="btn btn-primary">
+                  Conferir Divergência
+                </button>
+              </div>
+            </form>
+
+            <div
+              id="resultado-container"
+              class="hidden"
+              style="
+                margin-top: 20px;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+              "
+            >
+              <h3>Resultado da Conferência</h3>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr;
+                  gap: 20px;
+                  margin-top: 15px;
+                "
+              >
+                <div>
+                  <label>Total Fiscal (Notas)</label>
+                  <div
+                    id="res-fiscal"
+                    style="font-size: 18px; font-weight: bold"
+                  >
+                    R$ 0,00
+                  </div>
+                </div>
+                <div>
+                  <label>Total Contábil (Saldo)</label>
+                  <div
+                    id="res-contabil"
+                    style="font-size: 18px; font-weight: bold"
+                  >
+                    R$ 0,00
+                  </div>
+                </div>
+                <div>
+                  <label>Diferença</label>
+                  <div
+                    id="res-diferenca"
+                    style="font-size: 18px; font-weight: bold"
+                  >
+                    R$ 0,00
+                  </div>
+                </div>
+              </div>
+              <div
+                id="res-status"
+                style="
+                  margin-top: 20px;
+                  padding: 10px;
+                  text-align: center;
+                  border-radius: 4px;
+                  color: white;
+                  font-weight: bold;
+                "
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="conf_auditoria.js"></script>
+  </body>
+</html>

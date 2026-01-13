@@ -136,7 +136,11 @@
   flex: 1;
   overflow-y: auto;
   border: 1px solid #eee;
-  border-radius: 4px;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 6px;
+  position: relative;
 }
 
 .tabela-empresas {
@@ -172,6 +176,39 @@
   font-weight: 500;
 }
 
+tr.nivel-4 {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+tr.nivel-4:hover {
+  background-color: #e9ecef !important;
+}
+
+.icon-expand {
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+  margin-right: 5px;
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: #666;
+}
+
+tr.nivel-4.expandido .icon-expand {
+  transform: rotate(90deg);
+}
+
+tr.linha-filha {
+  background-color: #fffde7;
+  font-size: 11px;
+  color: #555;
+}
+
+.hidden {
+  display: none;
+}
+
 .modal-footer {
   padding: 15px 20px;
   border-top: 1px solid #eee;
@@ -188,4 +225,82 @@
 .footer-actions {
   display: flex;
   gap: 10px;
+}
+
+.btn-sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.loading-container {
+  padding: 40px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tabela-balancete {
+  width: 100%;
+  border-collapse: separate;
+  font-size: 12px;
+  border-spacing: 0;
+}
+
+.tabela-balancete th {
+  background-color: #f8f9fa;
+  color: #444;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  padding: 10px 12px;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tabela-balancete td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.tabela-balancete tr:hover {
+  background-color: #f1f7ff;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.val-negativo {
+  color: #dc3545;
+}
+.val-positivo {
+  color: #198754;
 }

@@ -23,7 +23,7 @@
         <div class="main-card">
           <div class="card-header">
             <div class="header-title">
-              <h2>Conferência Fiscal</h2>
+              <h2>Conferência Balanço Patrimonial</h2>
             </div>
           </div>
 
@@ -86,14 +86,6 @@
               </div>
 
               <div class="input-group span-2">
-                <label>Tipo</label>
-                <select id="select-tipo">
-                  <option value="entradas">Entradas</option>
-                  <option value="saidas">Saídas</option>
-                </select>
-              </div>
-
-              <div class="input-group span-2">
                 <label>Formato</label>
                 <select id="select-formato">
                   <option value="xlsx">Excel (.xlsx)</option>
@@ -101,7 +93,7 @@
                 </select>
               </div>
 
-              <div class="input-group span-8">
+              <div class="input-group span-10">
                 <label>Salvar em</label>
                 <div class="input-with-icon">
                   <input
@@ -126,6 +118,44 @@
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+
+        <div
+          id="card-balancete"
+          class="main-card hidden"
+          style="margin-top: 20px"
+        >
+          <div class="card-header">
+            <div class="header-title">
+              <h2>Visualização Balanço Patrimonial</h2>
+            </div>
+            <div class="header-actions"></div>
+          </div>
+
+          <div class="card-body">
+            <div id="loader-balancete" class="loading-container hidden">
+              <div class="spinner"></div>
+              <p style="margin-top: 10px; color: #666; font-size: 12px">
+                Processando dados contábeis...
+              </p>
+            </div>
+
+            <div id="container-tabela" class="tabela-container hidden">
+              <table class="tabela-balancete">
+                <thead>
+                  <tr>
+                    <th width="80">Conta</th>
+                    <th width="100">Classificação</th>
+                    <th>Descrição da Conta</th>
+                    <th class="text-right" width="120">Débito (R$)</th>
+                    <th class="text-right" width="120">Crédito (R$)</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-balancete"></tbody>
+                <tfoot id="tfoot-balancete"></tfoot>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -186,6 +216,6 @@
 
     <script src="../../components/menu.js"></script>
     <script src="../../assets/global.js"></script>
-    <script src="conf_fiscal.js"></script>
+    <script src="conf_fiscal_bp.js"></script>
   </body>
 </html>
