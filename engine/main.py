@@ -55,6 +55,7 @@ def handle_gerar_balancetes(dados: Dict):
             5102: {"deb": 140},
             6102: {"deb": 140},
             6107: {"deb": 140},
+            9000001: {"deb": 140},
             6201: {"deb": 1494, "cred": 502},
         }
 
@@ -92,6 +93,7 @@ def handle_detalhar_conta(dados: Dict):
             5102: {"deb": 140},
             6102: {"deb": 140},
             6107: {"deb": 140},
+            9000001: {"deb": 140},
             6201: {"deb": 1494, "cred": 502},
         }
 
