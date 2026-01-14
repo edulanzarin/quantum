@@ -411,7 +411,7 @@ Elements.tituloDetalhes = document.getElementById("titulo-modal-detalhes");
  * Ação ao clicar na célula de diferença
  */
 window.abrirDetalhesConta = function (contaId, nomeConta) {
-  Elements.tituloDetalhes.textContent = `DIFERENÇAS ${contaId} - ${nomeConta}`;
+  Elements.tituloDetalhes.textContent = `DIFERENÇAS | ${contaId} - ${nomeConta}`;
   Elements.tbodyDetalhes.innerHTML =
     '<tr><td colspan="6" class="text-center p-4">Carregando lançamentos...</td></tr>';
   Elements.modalDetalhes.classList.remove("hidden");
