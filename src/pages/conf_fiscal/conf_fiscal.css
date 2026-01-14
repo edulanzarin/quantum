@@ -251,16 +251,6 @@
   background-color: #e8f0fe;
 }
 
-.header-group-contabil {
-  color: #0d47a1 !important;
-  border-bottom: 1px solid #90caf9 !important;
-}
-
-.header-group-fiscal {
-  color: #e65100 !important;
-  border-bottom: 1px solid #ffcc80 !important;
-}
-
 .sub-header {
   font-size: 10px !important;
   color: #6c757d !important;
