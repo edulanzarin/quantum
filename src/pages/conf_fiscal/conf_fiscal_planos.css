@@ -1,0 +1,77 @@
+.main-card + .main-card {
+  margin-top: 12px;
+}
+
+.split-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+  height: calc(100vh - 40px);
+  overflow: hidden;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e9ecef;
+}
+
+.panel-header {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #495057;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.panel-body {
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.list-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f1f3f5;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-item.active {
+  background-color: #e3f2fd;
+  border-left: 4px solid #0d6efd;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #adb5bd;
+}
+
+.editor-toolbar {
+  background: #fff;
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

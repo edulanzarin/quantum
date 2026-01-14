@@ -1,54 +1,50 @@
-from bd.conexao import criar_conexao
-import sys
+from bd.conexao import criar_conexao_questor
 
-def buscar_notas_por_cfop(empresa, data_ini, data_fim, lista_cfops):
+
+def buscar_notas_saida(empresa, data_ini, data_fim):
     """
-    Busca notas fiscais de entrada que tenham os CFOPs especificados.
-    Retorna uma lista de dicionários com os dados da nota.
+    Busca notas de saída fiscais (LCTOFISSAI) e seus CFOPs.
+    Retorna lista de dicionários padronizada.
     """
-    conexao = criar_conexao()
-    if not conexao:
+    conn = criar_conexao_questor()
+    if not conn:
         return []
 
     try:
-        cursor = conexao.cursor()
-        
-        cfops_str = ",".join(str(c) for c in lista_cfops)
-        
-        sql = f"""
+        cursor = conn.cursor()
+        sql = """
             SELECT 
-                C.CODIGOCFOP,
-                N.NUMERONF,
-                N.DATAEMISSAO,
-                N.CODIGOPESSOA,
-                SUM(C.VALORCONTABILIMPOSTO) as VALOR_TOTAL
-            FROM LCTOFISENT N
-            JOIN LCTOFISENTCFOP C ON N.CHAVELCTOFISENT = C.CHAVELCTOFISENT 
-                                 AND N.CODIGOEMPRESA = C.CODIGOEMPRESA
-            WHERE N.CODIGOEMPRESA = ?
-              AND N.DATAENTRADA BETWEEN ? AND ?
-              AND C.CODIGOCFOP IN ({cfops_str})
-            GROUP BY C.CODIGOCFOP, N.NUMERONF, N.DATAEMISSAO, N.CODIGOPESSOA
+                F.CHAVELCTOFISSAI, 
+                F.NUMERONF, 
+                F.VALORCONTABIL, 
+                F.DATALCTOFIS,
+                CF.CODIGOCFOP,
+                CF.VALORIMPOSTO,   
+                CF.ALIQIMPOSTO     
+            FROM LCTOFISSAI F
+            INNER JOIN LCTOFISSAICFOP CF 
+                ON (F.CHAVELCTOFISSAI = CF.CHAVELCTOFISSAI 
+                    AND F.CODIGOEMPRESA = CF.CODIGOEMPRESA)
+            WHERE F.CODIGOEMPRESA = ? 
+              AND F.DATALCTOFIS BETWEEN ? AND ?
         """
-        
         cursor.execute(sql, (empresa, data_ini, data_fim))
-        
-        resultados = []
-        for row in cursor.fetchall():
-            resultados.append({
-                "cfop": row[0],
+
+        return [
+            {
+                "id_fiscal": row[0],
                 "numero_nf": row[1],
-                "data_emissao": row[2],
-                "codigo_pessoa": row[3],
-                "valor": float(row[4])
-            })
-            
-        return resultados
+                "valor_total": float(row[2]) if row[2] else 0.0,
+                "data": row[3],
+                "cfop": row[4],
+                "valor_imposto": float(row[5]) if row[5] else 0.0,
+                "aliquota": float(row[6]) if row[6] else 0.0,
+            }
+            for row in cursor.fetchall()
+        ]
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        print(f"[bd_fiscal] Erro ao buscar notas: {e}")
         return []
     finally:
-        if conexao:
-            conexao.close()
+        conn.close()

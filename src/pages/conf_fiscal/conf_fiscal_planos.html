@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gerenciador de Planos</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/global.css" />
+    <link rel="stylesheet" href="conf_fiscal.css" />
+    <link rel="stylesheet" href="conf_fiscal_planos.css" />
+  </head>
+
+  <body>
+    <aside id="sidebar-container"></aside>
+
+    <main style="padding: 20px">
+      <div class="split-container">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Planos Cadastrados</h2>
+            <button class="btn btn-primary btn-sm" id="btn-novo-plano">
+              <span
+                class="material-icons-round"
+                style="font-size: 16px; margin-right: 4px"
+                >add</span
+              >
+              Novo
+            </button>
+          </div>
+
+          <div style="padding: 10px; border-bottom: 1px solid #eee">
+            <div class="modal-search-box" style="margin: 0">
+              <span class="material-icons-round">search</span>
+              <input
+                type="text"
+                id="input-filtro-planos"
+                placeholder="Buscar planos..."
+              />
+            </div>
+          </div>
+
+          <div
+            class="panel-body"
+            style="padding: 0"
+            id="container-lista-planos"
+          >
+            <div class="empty-state">
+              <span
+                class="material-icons-round"
+                style="font-size: 32px; margin-bottom: 10px"
+                >folder_off</span
+              >
+              <p>Nenhum plano encontrado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-editor">
+          <div class="panel-header">
+            <h2 id="titulo-editor">Detalhes do Plano</h2>
+            <div id="acoes-editor" class="hidden">
+              <button
+                class="btn btn-danger-outline btn-sm"
+                id="btn-excluir-plano"
+              >
+                <span
+                  class="material-icons-round"
+                  style="font-size: 16px; margin-right: 4px"
+                  >delete</span
+                >
+                Excluir Plano
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <form id="form-plano" class="compact-grid">
+              <div class="input-group span-2">
+                <label>Cód. Sistema</label>
+                <input
+                  type="text"
+                  id="input-codigo-plano"
+                  value="Novo"
+                  readonly
+                  style="
+                    background-color: #f8f9fa;
+                    color: #888;
+                    font-weight: bold;
+                    text-align: center;
+                  "
+                />
+              </div>
+
+              <div class="input-group span-10">
+                <label
+                  >Nome do Plano de Conferência
+                  <span style="color: red">*</span></label
+                >
+                <input
+                  type="text"
+                  id="input-nome-plano"
+                  placeholder="Ex: Conferência Padrão Indústria"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="span-12" style="margin-top: 20px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <h3
+                    style="
+                      font-size: 12px;
+                      font-weight: 700;
+                      color: #555;
+                      text-transform: uppercase;
+                      margin: 0;
+                    "
+                  >
+                    Contas Vinculadas
+                  </h3>
+
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <div
+                      class="modal-search-box"
+                      style="margin: 0; width: 200px; height: 28px"
+                    >
+                      <span class="material-icons-round" style="font-size: 16px"
+                        >search</span
+                      >
+                      <input
+                        type="text"
+                        id="input-filtro-contas"
+                        placeholder="Filtrar CFOP..."
+                        style="font-size: 12px; height: 26px"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      id="btn-add-conta"
+                      class="btn btn-secondary btn-sm"
+                    >
+                      <span
+                        class="material-icons-round"
+                        style="font-size: 16px; margin-right: 4px"
+                        >playlist_add</span
+                      >
+                      Adicionar Regra
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="tabela-container"
+                  style="height: calc(100vh - 350px); min-height: 200px"
+                >
+                  <table class="tabela-balancete">
+                    <thead>
+                      <tr>
+                        <th width="100">CFOP</th>
+                        <th>Conta Débito</th>
+                        <th>Conta Crédito</th>
+                        <th width="80" class="text-center">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-contas">
+                      <tr>
+                        <td
+                          colspan="4"
+                          class="text-center"
+                          style="padding: 20px; color: #999"
+                        >
+                          Nenhuma conta configurada neste plano.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="editor-toolbar">
+            <button
+              type="button"
+              id="btn-cancelar-edicao"
+              class="btn btn-secondary"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              id="btn-salvar-plano"
+              class="btn btn-primary"
+              style="min-width: 120px"
+            >
+              <span class="material-icons-round" style="margin-right: 5px"
+                >save</span
+              >
+              Salvar Alterações
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="modal-conta" class="modal-overlay hidden">
+      <div class="modal-container" style="width: 400px">
+        <div class="modal-header">
+          <h3 id="titulo-modal-conta">CONFIGURAR REGRA</h3>
+        </div>
+        <div class="modal-body">
+          <div class="compact-grid">
+            <div class="input-group span-12">
+              <label>CFOP <span style="color: red">*</span></label>
+              <input
+                type="text"
+                id="modal-cfop"
+                placeholder="Ex: 5102"
+                maxlength="4"
+                autocomplete="off"
+              />
+            </div>
+            <div class="input-group span-12">
+              <label>Conta Débito</label>
+              <input
+                type="text"
+                id="modal-deb"
+                placeholder="Ex: 140"
+                autocomplete="off"
+              />
+            </div>
+            <div class="input-group span-12">
+              <label>Conta Crédito</label>
+              <input
+                type="text"
+                id="modal-cred"
+                placeholder="Ex: 300"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger-outline btn-fechar-modal">
+            Cancelar
+          </button>
+          <button id="btn-confirmar-conta" class="btn btn-primary">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../components/menu.js"></script>
+    <script src="../../assets/global.js"></script>
+    <script src="conf_fiscal_planos.js"></script>
+  </body>
+</html>

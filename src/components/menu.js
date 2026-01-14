@@ -32,6 +32,10 @@ const sidebarHTML = `
                     <span class="material-icons-round">tune</span>
                     <span>Conferência AUditoria</span>
                 </a>
+                <a href="../conf_fiscal/conf_fiscal_planos.html" class="submenu-item" id="link-conf_fiscal_planos">
+                    <span class="material-icons-round">tune</span>
+                    <span>Configurar Planos</span>
+                </a>
             </div>
         </div>
     </nav>
@@ -49,7 +53,8 @@ const submenuFiscal = document.getElementById("submenu-fiscal");
 const currentPath = window.location.pathname;
 const isFiscalPage =
   currentPath.includes("conf_fiscal_bp") ||
-  currentPath.includes("conf_auditoria");
+  currentPath.includes("conf_auditoria") ||
+  currentPath.includes("conf_fiscal_planos");
 
 // Se estiver em uma página fiscal, expande o menu automaticamente
 if (isFiscalPage) {
@@ -71,4 +76,6 @@ if (currentPath.includes("index.html")) {
   document.getElementById("link-conf_fiscal_bp").classList.add("active");
 } else if (currentPath.includes("conf_auditoria.html")) {
   document.getElementById("link-conf_auditoria").classList.add("active");
+} else if (currentPath.includes("conf_fiscal_planos.html")) {
+  document.getElementById("link-conf_fiscal_planos").classList.add("active");
 }

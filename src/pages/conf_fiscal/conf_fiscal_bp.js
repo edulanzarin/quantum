@@ -68,6 +68,8 @@ function configurarOuvinteBackend() {
         processarListaEmpresas(dados);
       } else if (acao === "gerar_bp") {
         finalizarCarregamentoBalancete(dados);
+      } else if (json.acao === "detalhar_conta") {
+        renderizarDetalhesConta(json.dados);
       } else {
         console.warn("[Frontend] Ação não reconhecida:", acao);
       }
@@ -258,35 +260,81 @@ function executarRelatorio() {
 
 /**
  * Chamado automaticamente quando os dados do balancete chegam
+ * Agora espera receber { contabil: [], fiscal: [] }
  */
-function finalizarCarregamentoBalancete(listaDados) {
-  console.log(
-    "[Frontend] Finalizando carregamento do balancete. Registros:",
-    listaDados?.length || 0
-  );
-
+function finalizarCarregamentoBalancete(dadosBackend) {
   Elements.loaderBalancete.classList.add("hidden");
   Elements.containerTabela.classList.remove("hidden");
 
-  renderizarBalancete(listaDados);
+  const listaContabil = dadosBackend.contabil || [];
+  const listaFiscal = dadosBackend.fiscal || [];
 
-  if (listaDados && listaDados.length > 0) {
-    window.Sistema.Toast.success(
-      "Sucesso",
-      `Balancete carregado com ${listaDados.length} registros.`
-    );
+  console.log(
+    `[Frontend] Dados recebidos -> Contábil: ${listaContabil.length}, Fiscal: ${listaFiscal.length}`
+  );
+
+  const dadosUnificados = unificarListas(listaContabil, listaFiscal);
+
+  renderizarBalanceteUnificado(dadosUnificados);
+
+  if (dadosUnificados.length > 0) {
+    window.Sistema.Toast.success("Sucesso", "Conferência gerada com sucesso.");
   } else {
-    window.Sistema.Toast.info(
-      "Aviso",
-      "Nenhum dado encontrado para o período."
-    );
+    window.Sistema.Toast.info("Aviso", "Nenhum dado encontrado.");
   }
 }
 
 /**
- * Renderiza a tabela HTML do balancete
+ * Mescla as duas listas em uma só, garantindo que contas que
+ * só existem em um dos lados apareçam na tabela.
  */
-function renderizarBalancete(listaDados) {
+function unificarListas(listaContabil, listaFiscal) {
+  const mapa = new Map();
+
+  const criarEstrutura = (item) => ({
+    conta: item.conta,
+    classificacao: item.classificacao,
+    descricao: item.descricao,
+    nivel: item.nivel,
+    debContabil: 0,
+    credContabil: 0,
+    saldoContabil: 0,
+    debFiscal: 0,
+    credFiscal: 0,
+    saldoFiscal: 0,
+  });
+
+  listaContabil.forEach((item) => {
+    if (!mapa.has(item.conta)) {
+      mapa.set(item.conta, criarEstrutura(item));
+    }
+    const reg = mapa.get(item.conta);
+    reg.debContabil = item.valorDebito;
+    reg.credContabil = item.valorCredito;
+    reg.saldoContabil = item.saldo;
+  });
+
+  listaFiscal.forEach((item) => {
+    if (!mapa.has(item.conta)) {
+      mapa.set(item.conta, criarEstrutura(item));
+    }
+    const reg = mapa.get(item.conta);
+    reg.debFiscal = item.valorDebito;
+    reg.credFiscal = item.valorCredito;
+    reg.saldoFiscal = item.saldo;
+  });
+
+  return Array.from(mapa.values()).sort((a, b) => {
+    return a.classificacao.localeCompare(b.classificacao, undefined, {
+      numeric: true,
+    });
+  });
+}
+
+/**
+ * Renderiza a tabela HTML SEM AS COLUNAS DE SALDO
+ */
+function renderizarBalanceteUnificado(listaDados) {
   const formatador = new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -296,33 +344,57 @@ function renderizarBalancete(listaDados) {
 
   if (!listaDados || listaDados.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #777;">Nenhum registro encontrado.</td></tr>';
+      '<tr><td colspan="9" class="text-center" style="padding: 20px;">Nenhum registro encontrado.</td></tr>';
     return;
   }
 
   const htmlLinhas = listaDados
     .map((item) => {
-      // Estilo visual: Nível 1 e 2 em Negrito
-      const isNegrito = item.nivel <= 2;
-      const estiloExtra = isNegrito
-        ? 'style="font-weight: bold; background-color: #f9f9f9;"'
+      let classeLinha = "";
+
+      if (item.nivel === 1) classeLinha = "nivel-1";
+      else if (item.nivel === 2) classeLinha = "nivel-2";
+      else if (item.nivel === 3) classeLinha = "nivel-3";
+      else classeLinha = "nivel-analitico";
+
+      const indent = "&nbsp;".repeat((item.nivel - 1) * 3);
+
+      const diferenca = item.saldoContabil - item.saldoFiscal;
+
+      const temDiferenca = Math.abs(diferenca) > 0.02;
+      const classeDiff = temDiferenca ? "diff-erro cursor-pointer" : "diff-ok";
+      const eventoClick = temDiferenca
+        ? `onclick="abrirDetalhesConta(${item.conta}, '${item.descricao}')"`
         : "";
 
-      // Indentação visual simples
-      const paddingDescricao = (item.nivel - 1) * 15;
+      const fmt = (val) => {
+        if (Math.abs(val) < 0.01 && item.nivel > 1)
+          return '<span class="text-muted">-</span>';
+        return formatador.format(val);
+      };
 
-      // Sem eventos de clique, sem setinhas. Apenas dados.
       return `
-        <tr ${estiloExtra}>
-            <td>${item.conta}</td>
-            <td>${item.classificacao}</td>
-            
-            <td style="padding-left: ${paddingDescricao}px;">
-                ${item.descricao}
+        <tr class="${classeLinha}">
+            <td title="${item.conta}">${item.conta}</td>
+            <td title="${item.classificacao}">${item.classificacao}</td>
+            <td title="${item.descricao}">
+                ${indent}${item.descricao}
             </td>
             
-            <td class="text-right">${formatador.format(item.valorDebito)}</td>
-            <td class="text-right">${formatador.format(item.valorCredito)}</td>
+            <td class="text-right">${fmt(item.debContabil)}</td>
+            
+            <td class="text-right" style="border-right: 2px solid #dee2e6;">
+                ${fmt(item.credContabil)}
+            </td>
+
+            <td class="col-separator"></td>
+
+            <td class="text-right">${fmt(item.debFiscal)}</td>
+            <td class="text-right">${fmt(item.credFiscal)}</td>
+
+            <td class="text-right ${classeDiff}" ${eventoClick} title="Clique para ver detalhes">
+                ${fmt(diferenca)}
+            </td>
         </tr>
       `;
     })
@@ -330,6 +402,120 @@ function renderizarBalancete(listaDados) {
 
   tbody.innerHTML = htmlLinhas;
 }
+
+Elements.modalDetalhes = document.getElementById("modal-detalhes-conta");
+Elements.tbodyDetalhes = document.getElementById("tbody-detalhes");
+Elements.tituloDetalhes = document.getElementById("titulo-modal-detalhes");
+
+/**
+ * Ação ao clicar na célula de diferença
+ */
+window.abrirDetalhesConta = function (contaId, nomeConta) {
+  Elements.tituloDetalhes.textContent = `DIFERENÇAS ${contaId} - ${nomeConta}`;
+  Elements.tbodyDetalhes.innerHTML =
+    '<tr><td colspan="6" class="text-center p-4">Carregando lançamentos...</td></tr>';
+  Elements.modalDetalhes.classList.remove("hidden");
+
+  window.api.rodarPython({
+    modulo: "conf_fiscal",
+    acao: "detalhar_conta",
+    dados: {
+      empresa: Elements.inputEmpresa.value,
+      dataInicio: Elements.inputDataIni.value,
+      dataFim: Elements.inputDataFim.value,
+      contaAlvo: contaId,
+    },
+  });
+};
+
+function renderizarDetalhesConta(listaLancamentos) {
+  const tbody = Elements.tbodyDetalhes;
+  tbody.innerHTML = "";
+
+  if (!listaLancamentos || listaLancamentos.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="6" class="text-center p-4 text-success">Tudo certo! Nenhuma divergência encontrada.</td></tr>';
+    return;
+  }
+
+  const fmtMoeda = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 });
+
+  listaLancamentos.forEach((item) => {
+    let dataFmt = item.data_lancamento;
+    try {
+      if (dataFmt && dataFmt.includes("-")) {
+        const partes = dataFmt.split("-");
+        dataFmt = `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+    } catch (e) {}
+
+    let badgeOrigem = "";
+    let corLinha = "";
+
+    if (item.tipo_origem === "FISCAL") {
+      badgeOrigem = `<span class="badge bg-warning text-dark">FALTA NO CONTÁBIL</span>`;
+      corLinha = "background-color: #fff3cd;";
+    } else {
+      badgeOrigem = `<span class="badge bg-danger">ERRO CONTÁBIL</span>`;
+      corLinha = "background-color: #fff5f5;";
+    }
+
+    const cfopTexto = item.cfop && item.cfop !== "-" ? item.cfop : "";
+    const badgeCfop = cfopTexto
+      ? `<span style="background:#e0e0e0; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.9em;">${cfopTexto}</span>`
+      : '<span class="text-muted">-</span>';
+
+    let textoPrincipal = "";
+    if (item.tipo_origem === "FISCAL") {
+      textoPrincipal = `<strong>${item.motivo_divergencia}</strong>`;
+    } else {
+      textoPrincipal = `
+            ${item.hist_complemento || item.hist_codigo || "Sem histórico"}
+            <div style="font-size:0.85em; color:#dc3545; margin-top:2px;">
+                ⚠️ ${item.motivo_divergencia}
+            </div>
+        `;
+    }
+
+    const tr = document.createElement("tr");
+    tr.style = corLinha;
+
+    tr.innerHTML = `
+        <td style="vertical-align:middle">${dataFmt}</td>
+        
+        <td style="vertical-align:middle; text-align:center;">
+            ${badgeOrigem}
+        </td>
+
+        <td class="text-center" style="vertical-align:middle">
+            ${badgeCfop}
+        </td>
+
+        <td style="vertical-align:middle">
+            ${textoPrincipal}
+        </td>
+
+        <td class="text-center" style="vertical-align:middle">
+            <span style="font-weight:bold; color: ${
+              item.tipo_operacao === "D" ? "#0d6efd" : "#dc3545"
+            }">
+                ${item.tipo_operacao}
+            </span>
+        </td>
+
+        <td class="text-right" style="vertical-align:middle">
+            ${fmtMoeda.format(item.valor)}
+        </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.querySelectorAll(".btn-close-modal").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    Elements.modalDetalhes.classList.add("hidden");
+  });
+});
 
 /**
  * Função global para expandir/recolher linhas filhas

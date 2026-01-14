@@ -145,11 +145,29 @@
               <table class="tabela-balancete">
                 <thead>
                   <tr>
-                    <th width="80">Conta</th>
-                    <th width="100">Classificação</th>
-                    <th>Descrição da Conta</th>
-                    <th class="text-right" width="120">Débito (R$)</th>
-                    <th class="text-right" width="120">Crédito (R$)</th>
+                    <th rowspan="2">Conta</th>
+                    <th rowspan="2">Classif.</th>
+                    <th rowspan="2">Descrição</th>
+
+                    <th colspan="2" class="text-center header-group-contabil">
+                      CONTÁBIL
+                    </th>
+
+                    <th rowspan="2" class="col-separator"></th>
+
+                    <th colspan="2" class="text-center header-group-fiscal">
+                      FISCAL
+                    </th>
+
+                    <th rowspan="2" class="text-right">Diferença</th>
+                  </tr>
+
+                  <tr>
+                    <th class="text-right sub-header">Débito</th>
+                    <th class="text-right sub-header">Crédito</th>
+
+                    <th class="text-right sub-header">Débito</th>
+                    <th class="text-right sub-header">Crédito</th>
                   </tr>
                 </thead>
                 <tbody id="tbody-balancete"></tbody>
@@ -210,6 +228,48 @@
               Confirmar
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-detalhes-conta" class="modal-overlay hidden">
+      <div class="modal-container" style="max-width: 900px; width: 90%">
+        <div class="modal-header">
+          <h3 id="titulo-modal-detalhes">Extrato da Conta</h3>
+          <button
+            type="button"
+            class="btn-close-modal text-danger"
+            style="
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            "
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto">
+          <table class="tabela-balancete">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th class="text-center">Origem</th>
+                <th class="text-center">CFOP</th>
+                <th>Descrição / Motivo</th>
+                <th class="text-center">Op.</th>
+                <th class="text-right">Valor (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-detalhes"></tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-close-modal">
+            Fechar
+          </button>
         </div>
       </div>
     </div>

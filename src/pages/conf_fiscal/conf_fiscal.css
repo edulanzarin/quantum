@@ -1,8 +1,11 @@
+/* ===========================================
+   GRID LAYOUT SYSTEM
+   =========================================== */
 .compact-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 15px;
-  row-gap: 15px;
+  gap: 10px;
+  row-gap: 10px;
 }
 
 .span-2 {
@@ -43,6 +46,9 @@
   }
 }
 
+/* ===========================================
+   MODAL - ESTRUTURA BASE
+   =========================================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -66,10 +72,10 @@
 
 .modal-container {
   background: #fff;
-  width: 600px;
+  width: 550px;
   max-width: 90%;
-  max-height: 85vh;
-  border-radius: 8px;
+  max-height: 80vh;
+  border-radius: 6px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -89,8 +95,11 @@
   }
 }
 
+/* ===========================================
+   MODAL - SEÇÕES
+   =========================================== */
 .modal-header {
-  padding: 15px 20px;
+  padding: 10px 14px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
@@ -99,48 +108,79 @@
 }
 
 .modal-header h3 {
-  font-size: 16px;
+  font-size: 13px;
   color: #333;
   margin: 0;
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 14px;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.modal-footer {
+  padding: 10px 14px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+}
+
+.footer-info small {
+  color: #888;
+  font-size: 11px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===========================================
+   MODAL - SEARCH BOX
+   =========================================== */
 .modal-search-box {
   display: flex;
   align-items: center;
   border: 1px solid #ced4da;
   border-radius: 4px;
-  padding: 0 10px;
-  margin-bottom: 15px;
+  padding: 0 8px;
+  margin-bottom: 12px;
   background: #fff;
+  height: 30px;
 }
 
 .modal-search-box input {
   border: none;
   box-shadow: none;
-  padding-left: 8px;
+  padding-left: 6px;
+  font-size: 12px;
+  height: 28px;
 }
 
 .modal-search-box .material-icons-round {
   color: #999;
+  font-size: 18px;
 }
 
+/* ===========================================
+   TABELAS - CONTAINER
+   =========================================== */
 .tabela-container {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid #eee;
-  max-height: 600px;
+  border: 1px solid #cdd5de;
+  max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
-  border-radius: 6px;
+  border-radius: 5px;
   position: relative;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tabela-empresas {
@@ -153,16 +193,16 @@
   position: sticky;
   top: 0;
   text-align: left;
-  padding: 10px;
-  font-size: 12px;
+  padding: 8px;
+  font-size: 11px;
   color: #555;
   border-bottom: 1px solid #ddd;
 }
 
 .tabela-empresas td {
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-bottom: 1px solid #f5f5f5;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -176,6 +216,81 @@
   font-weight: 500;
 }
 
+.tabela-balancete {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tabela-balancete th {
+  background-color: #f1f3f5;
+  color: #495057;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 6px 7px;
+  border-bottom: 2px solid #dee2e6;
+  border-right: 1px solid #e9ecef;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabela-balancete td {
+  padding: 4px 7px;
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #f8f9fa;
+  color: #212529;
+  vertical-align: middle;
+}
+
+.tabela-balancete tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.tabela-balancete tbody tr:hover {
+  background-color: #e8f0fe;
+}
+
+.header-group-contabil {
+  color: #0d47a1 !important;
+  border-bottom: 1px solid #90caf9 !important;
+}
+
+.header-group-fiscal {
+  color: #e65100 !important;
+  border-bottom: 1px solid #ffcc80 !important;
+}
+
+.sub-header {
+  font-size: 10px !important;
+  color: #6c757d !important;
+}
+
+.nivel-1 {
+  font-weight: 800;
+  background-color: #e9ecef !important;
+  color: #212529;
+  text-transform: uppercase;
+}
+
+.nivel-2 {
+  font-weight: 600;
+  background-color: #f8f9fa !important;
+  color: #343a40;
+}
+
+.nivel-3 {
+  font-weight: 400;
+  background-color: #ffffff !important;
+  color: #495057;
+}
+
+.nivel-analitico {
+  font-weight: 400;
+  color: #6c757d;
+  font-style: italic;
+}
+
 tr.nivel-4 {
   cursor: pointer;
   transition: background-color 0.2s;
@@ -185,12 +300,21 @@ tr.nivel-4:hover {
   background-color: #e9ecef !important;
 }
 
+tr.linha-filha {
+  background-color: #fffde7;
+  font-size: 10px;
+  color: #555;
+}
+
+/* ===========================================
+   ÍCONES E ELEMENTOS ESPECIAIS
+   =========================================== */
 .icon-expand {
   display: inline-block;
-  width: 16px;
+  width: 14px;
   text-align: center;
-  margin-right: 5px;
-  font-size: 10px;
+  margin-right: 4px;
+  font-size: 9px;
   transition: transform 0.2s;
   color: #666;
 }
@@ -199,44 +323,18 @@ tr.nivel-4.expandido .icon-expand {
   transform: rotate(90deg);
 }
 
-tr.linha-filha {
-  background-color: #fffde7;
-  font-size: 11px;
-  color: #555;
+.col-separator {
+  background-color: #e9ecef;
+  width: 3px;
+  padding: 0 !important;
+  border: none !important;
 }
 
-.hidden {
-  display: none;
-}
-
-.modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff;
-}
-
-.footer-info small {
-  color: #888;
-}
-
-.footer-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-sm {
-  height: 30px;
-  padding: 0 12px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-}
-
+/* ===========================================
+   LOADING / SPINNER
+   =========================================== */
 .loading-container {
-  padding: 40px 0;
+  padding: 30px 0;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -245,8 +343,8 @@ tr.linha-filha {
 }
 
 .spinner {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border: 3px solid #f3f3f3;
   border-top: 3px solid #0d6efd;
   border-radius: 50%;
@@ -262,45 +360,57 @@ tr.linha-filha {
   }
 }
 
-.tabela-balancete {
-  width: 100%;
-  border-collapse: separate;
-  font-size: 12px;
-  border-spacing: 0;
+/* ===========================================
+   CLASSES DE DIFERENÇA E VALIDAÇÃO
+   =========================================== */
+.diff-erro {
+  background-color: #ffcdd2 !important;
+  color: #c62828;
+  font-weight: bold;
 }
 
-.tabela-balancete th {
-  background-color: #f8f9fa;
-  color: #444;
+.diff-ok {
+  color: #198754;
   font-weight: 600;
-  text-transform: uppercase;
-  font-size: 11px;
-  padding: 10px 12px;
-  border-bottom: 2px solid #dee2e6;
-  text-align: left;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
-.tabela-balancete td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #eee;
-  color: #333;
-}
-
-.tabela-balancete tr:hover {
-  background-color: #f1f7ff;
+/* ===========================================
+   UTILITÁRIOS
+   =========================================== */
+.hidden {
+  display: none;
 }
 
 .text-right {
   text-align: right;
+  letter-spacing: -0.3px;
 }
 
-.val-negativo {
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #adb5bd;
+}
+
+.text-danger {
   color: #dc3545;
 }
-.val-positivo {
-  color: #198754;
+
+.btn-sm {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cursor-pointer:hover {
+  background-color: #ffebee;
 }

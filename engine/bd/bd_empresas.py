@@ -1,8 +1,9 @@
-from bd.conexao import criar_conexao
-import sys 
+from bd.conexao import criar_conexao_questor
+import sys
+
 
 def listar_todas_empresas():
-    conexao = criar_conexao()
+    conexao = criar_conexao_questor()
     if not conexao:
         return []
 
@@ -12,11 +13,11 @@ def listar_todas_empresas():
         cursor.execute(sql)
 
         nomes_colunas = [desc[0] for desc in cursor.description]
-        
+
         lista_empresas = []
         for linha in cursor.fetchall():
             lista_empresas.append(dict(zip(nomes_colunas, linha)))
-        
+
         return lista_empresas
 
     except Exception as e:
